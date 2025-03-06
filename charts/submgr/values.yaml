@@ -1,0 +1,42 @@
+replicaCount: 1
+
+image:
+  repository: nexus3.o-ran-sc.org:10002/o-ran-sc/ric-plt-submgr
+  pullPolicy: IfNotPresent
+  tag: "0.10.1"  # Or use .Values.global.tag
+
+service:
+  type: ClusterIP
+  port: 8080 # Choose a relevant port
+
+command: "./submgr"
+args:
+  - "-f"
+  - "174395{CFG_FILE}"
+
+env:
+  CONTAINER_NAME: "ric_submgr"
+  HOST_NAME: "ric_submgr_host"
+  POD_NAME: "submgr_pod"
+  SERVICE_NAME: "ric_submgr_service"
+  CFG_FILE: "/opt/config/submgr-config.yaml"
+  RMR_SEED_RT: "/opt/config/submgr-uta-rtg.rt"
+  RMR_SRC_ID: "10.0.2.13"
+
+volumeMounts:
+  - name: submgr-config
+    mountPath: /opt/config/submgr-config.yaml
+    subPath: submgr-config.yaml
+  - name: routes-rtg
+    mountPath: /opt/config/submgr-uta-rtg.rt
+    subPath: routes.rtg
+
+volumes:
+  - name: submgr-config
+    configMap:
+      name: submgr-config
+  - name: routes-rtg
+    configMap:
+      name: routes-rtg
+
+resources: {}

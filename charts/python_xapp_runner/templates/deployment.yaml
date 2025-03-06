@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-python-xapp-runner-deployment
+  labels:
+    app: python_xapp_runner
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: python_xapp_runner
+  template:
+    metadata:
+      labels:
+        app: python_xapp_runner
+    spec:
+      containers:
+        - name: python-xapp-runner
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            {{- range ,  := .Values.env }}
+            - name: {{  }}
+              value: {{  | quote }}
+            {{- end }}
+          volumeMounts:
+            {{- toYaml .Values.volumeMounts | nindent 12 }}
+          volumes:
+            {{- toYaml .Values.volumes | nindent 8 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          stdin: true
+          tty: true
+          command: ["/bin/bash"]
+          # You'll likely need to adjust this depending on how your xApps are run
+          # command: ["/bin/bash", "-c", "python /opt/xApps/your_xapp.py"]

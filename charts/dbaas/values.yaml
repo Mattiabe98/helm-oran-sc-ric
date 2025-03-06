@@ -1,0 +1,39 @@
+replicaCount: 1
+
+image:
+  repository: nexus3.o-ran-sc.org:10002/o-ran-sc/ric-plt-dbaas
+  pullPolicy: IfNotPresent
+  tag: "0.6.4" # Or use .Values.global.tag if you want a global tag
+
+service:
+  type: ClusterIP
+  port: 6379
+
+command: "redis-server"
+args:
+  - "--loadmodule"
+  - "/usr/local/libexec/redismodule/libredismodule.so"
+
+# Optionally, specify resource requests and limits
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Optionally, add environment variables
+env: {}
+  # - name: MY_ENV_VAR
+  #   value: "my-value"
+
+# Optionally, specify volume mounts
+volumeMounts: []
+  # - name: my-volume
+  #   mountPath: /path/to/mount
+
+# Optionally, specify volumes
+volumes: []
+  # - name: my-volume
+  #   emptyDir: {}

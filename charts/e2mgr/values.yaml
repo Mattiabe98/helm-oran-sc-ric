@@ -1,0 +1,42 @@
+replicaCount: 1
+
+image:
+  repository: nexus3.o-ran-sc.org:10002/o-ran-sc/ric-plt-e2mgr
+  pullPolicy: IfNotPresent
+  tag: "6.0.4" # Or use .Values.global.tag
+
+service:
+  type: ClusterIP
+  port: 3800
+
+command: "./main"
+args:
+  - "-port=3800"
+  - "-f"
+  - "/opt/E2Manager/resources/configuration.yaml"
+
+env:
+  CONTAINER_NAME: "ric_e2mgr"
+  HOST_NAME: "ric_e2mgr_host"
+  POD_NAME: "e2mgr_pod"
+  SERVICE_NAME: "ric_e2mgr_service"
+  RMR_SEED_RT: "/opt/E2Manager/router.txt"
+  RMR_SRC_ID: "10.0.2.11"
+
+volumeMounts:
+  - name: routes-rtg
+    mountPath: /opt/E2Manager/router.txt
+    subPath: routes.rtg
+  - name: e2mgr-config
+    mountPath: /opt/E2Manager/resources/configuration.yaml
+    subPath: e2mgr.yaml
+
+volumes:
+  - name: routes-rtg
+    configMap:
+      name: routes-rtg
+  - name: e2mgr-config
+    configMap:
+      name: e2mgr-config
+
+resources: {}

@@ -1,0 +1,24 @@
+dependencies:
+- name: dbaas
+  repository: file://./charts/dbaas
+  version: 0.1.0
+- name: rtmgr-sim
+  repository: file://./charts/rtmgr-sim
+  version: 0.1.0
+- name: submgr
+  repository: file://./charts/submgr
+  version: 0.1.0
+- name: e2term
+  repository: file://./charts/e2term
+  version: 0.1.0
+- name: appmgr
+  repository: file://./charts/appmgr
+  version: 0.1.0
+- name: e2mgr
+  repository: file://./charts/e2mgr
+  version: 0.1.0
+- name: python_xapp_runner
+  repository: file://./charts/python_xapp_runner
+  version: 0.1.0
+digest: sha256:eb887596f8cc13fecea7beb80d0fcdbf7ed7271cb0f677bec93b77730aec0274
+generated: "2025-03-06T17:30:58.56521068+01:00"

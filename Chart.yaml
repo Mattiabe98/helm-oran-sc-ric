@@ -1,0 +1,35 @@
+apiVersion: v2
+name: ric-platform  # Name of your overall platform
+description: A Helm chart to deploy the complete RIC platform
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: dbaas
+    version: "0.1.0"  # Replace with the actual version of your dbaas chart
+    repository: "file://./charts/dbaas" # Location of the chart
+
+  - name: rtmgr-sim
+    version: "0.1.0" # Replace with the actual version of your rtmgr_sim chart
+    repository: "file://./charts/rtmgr-sim" # Location of the chart
+
+  - name: submgr
+    version: "0.1.0" # Replace with the actual version of your submgr chart
+    repository: "file://./charts/submgr" # Location of the chart
+
+  - name: e2term
+    version: "0.1.0" # Replace with the actual version of your e2term chart
+    repository: "file://./charts/e2term" # Location of the chart
+
+  - name: appmgr
+    version: "0.1.0" # Replace with the actual version of your appmgr chart
+    repository: "file://./charts/appmgr" # Location of the chart
+
+  - name: e2mgr
+    version: "0.1.0" # Replace with the actual version of your e2mgr chart
+    repository: "file://./charts/e2mgr" # Location of the chart
+
+  - name: python_xapp_runner
+    version: "0.1.0" # Replace with the actual version of your python_xapp_runner chart
+    repository: "file://./charts/python_xapp_runner" # Location of the chart

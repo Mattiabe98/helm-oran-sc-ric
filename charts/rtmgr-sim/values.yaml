@@ -1,0 +1,37 @@
+replicaCount: 1
+
+image:
+  repository: rtmgr-sim
+  pullPolicy: IfNotPresent
+  tag: "i-release" # Use .Values.global.tag or specific tag
+
+service:
+  type: ClusterIP
+  port: 12020
+
+env:
+  CONTAINER_NAME: "ric_rtmgr-sim"
+  HOST_NAME: "ric_rtmgr-sim_host"
+  POD_NAME: "rtmgr-sim_pod"
+  SERVICE_NAME: "ric_rtmgr-sim_service"
+  CFGFILE: "/cfg/rtmgr-config.yaml"
+  RMR_SEED_RT: "/opt/config/uta-rtg.rt"
+  RMR_SRC_ID: "10.0.2.15"
+
+volumeMounts:
+  - name: rtmgr-config
+    mountPath: /opt/rmsimulator/resources/configuration.yaml
+    subPath: rtmgr-config.yaml
+  - name: routes-rtg
+    mountPath: /opt/config/uta-rtg.rt
+    subPath: routes.rtg
+
+volumes:
+  - name: rtmgr-config
+    configMap:
+      name: rtmgr-config
+  - name: routes-rtg
+    configMap:
+      name: routes-rtg
+
+resources: {}
