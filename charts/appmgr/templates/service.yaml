@@ -7,9 +7,17 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
+    - name: http
+      port: {{ .Values.service.httpPort }}  # Exposed service port
+      targetPort: {{ .Values.service.httpPort }}  # Maps to containerPort
       protocol: TCP
-      name: appmgr
+    - name: rmrroute
+      port: {{ .Values.service.rmrRoutePort }}
+      targetPort: {{ .Values.service.rmrRoutePort }}
+      protocol: TCP
+    - name: rmrdata
+      port: {{ .Values.service.rmrDataPort }}
+      targetPort: {{ .Values.service.rmrDataPort }}
+      protocol: TCP
   selector:
     app: appmgr
