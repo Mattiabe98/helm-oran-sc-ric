@@ -19,11 +19,19 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - name: http
+              containerPort: {{ .Values.service.httpPort }}
+              protocol: TCP
+            - name: rmrroute
+              containerPort: {{ .Values.service.rmrRoutePort }}
+              protocol: TCP
+            - name: rmrdata
+              containerPort: {{ .Values.service.rmrDataPort }}
+              protocol: TCP
           env:
-            {{- range ,  := .Values.env }}
-            - name: {{  }}
-              value: {{  | quote }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
