@@ -5,10 +5,6 @@ image:
   pullPolicy: IfNotPresent
   tag: "0.5.7" # Or use .Values.global.tag
 
-service:
-  type: ClusterIP
-  port: 8080 # Choose a relevant port
-
 env:
   CONTAINER_NAME: "ric_appmgr"
   HOST_NAME: "ric_appmgr_host"
@@ -16,6 +12,11 @@ env:
   SERVICE_NAME: "ric_appmgr_service"
   RMR_SEED_RT: "/opt/ric/config/router.txt"
   RMR_SRC_ID: "10.0.2.14"
+
+service:
+  httpPort: 8080
+  rmrRoutePort: 4560
+  rmrDataPort: 4561
 
 volumeMounts:
   - name: routes-rtg
