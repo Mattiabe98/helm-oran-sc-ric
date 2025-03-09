@@ -22,7 +22,7 @@ volumeMounts:
   - name: rtmgr-config
     mountPath: /opt/rmsimulator/resources/configuration.yaml
     subPath: rtmgr-config.yaml
-  - name: routes-rtg
+  - name: rtmgr-rtg
     mountPath: /opt/config/uta-rtg.rt
     subPath: routes.rtg
 
@@ -30,8 +30,8 @@ volumes:
   - name: rtmgr-config
     configMap:
       name: rtmgr-config
-  - name: routes-rtg
+  - name: rtmgr-rtg
     configMap:
-      name: routes-rtg
+      name: rtmgr-rtg
 
 resources: {}
