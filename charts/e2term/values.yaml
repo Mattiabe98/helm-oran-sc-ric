@@ -9,13 +9,6 @@ service:
   type: ClusterIP
   port: 36421 # SCTP port
 
-command: "./e2"
-args:
-  - "-p"
-  - "config"
-  - "-f"
-  - "config.conf"
-
 env:
   CONTAINER_NAME: "ric_e2term"
   HOST_NAME: "ric_e2term_host"
@@ -29,7 +22,7 @@ volumeMounts:
   - name: e2term-config
     mountPath: /opt/e2/config/config.conf
     subPath: e2term.conf
-  - name: routes-rtg
+  - name: e2term-rtg
     mountPath: /opt/e2/dockerRouter.txt
     subPath: routes.rtg
 
@@ -37,8 +30,8 @@ volumes:
   - name: e2term-config
     configMap:
       name: e2term-config
-  - name: routes-rtg
+  - name: e2term-rtg
     configMap:
-      name: routes-rtg
+      name: e2term-rtg
 
 resources: {}
