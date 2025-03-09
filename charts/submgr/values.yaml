@@ -22,7 +22,7 @@ volumeMounts:
   - name: submgr-config
     mountPath: /opt/config/submgr-config.yaml
     subPath: submgr-config.yaml
-  - name: routes-rtg
+  - name: submgr-rtg
     mountPath: /opt/config/submgr-uta-rtg.rt
     subPath: routes.rtg
 
@@ -30,8 +30,8 @@ volumes:
   - name: submgr-config
     configMap:
       name: submgr-config
-  - name: routes-rtg
+  - name: submgr-rtg
     configMap:
-      name: routes-rtg
+      name: submgr-rtg
 
 resources: {}
