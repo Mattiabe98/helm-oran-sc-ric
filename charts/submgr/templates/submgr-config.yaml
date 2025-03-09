@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: submgr-config
 data:
-  appmgr.yaml: |
+  submgr-config.yaml: |
     "local":
       "host": "10.0.2.13:8080"
     "logger":
