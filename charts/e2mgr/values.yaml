@@ -17,6 +17,7 @@ env:
   SERVICE_NAME: "ric_e2mgr_service"
   RMR_SEED_RT: "/opt/E2Manager/router.txt"
   RMR_SRC_ID: "10.0.2.11"
+  DBAAS_SERVICE_HOST: dbaas-service
 
 volumeMounts:
   - name: e2mgr-rtg
