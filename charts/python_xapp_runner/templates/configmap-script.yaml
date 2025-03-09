@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Chart.Name }}-script
+  name: xapp-script
 data:
   {{- $files := .Files }}
   {{- range tuple "xapp.py" "script2.py" }}
