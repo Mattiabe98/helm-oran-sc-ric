@@ -17,18 +17,18 @@ spec:
       containers:
         - name: submgr
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           ports:
             - containerPort: {{ .Values.service.port }}
-          command: ["./submgr", "-f $CFG_FILE"]
+          command: ["/bin/sh", "-c", "./submgr -f $CFG_FILE"]
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
-              value: {{ $value | quote }}
+              value: "{{ $value }}"
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
-          volumes:
-            {{- toYaml .Values.volumes | nindent 8 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        {{- toYaml .Values.volumes | nindent 8 }}
