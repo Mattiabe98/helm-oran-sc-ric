@@ -11,6 +11,6 @@ data:
   
   {{- $libFiles := .Files.Glob "lib/*" }}
   {{- range $path, $file := $libFiles }}
-  {{ . }}: |-
-    {{ $libFiles.Get . | trim | indent 4 }}
+  {{ base $path }}: |
+    {{ $libFiles.Get $path | nindent 8 }}
   {{- end }}
