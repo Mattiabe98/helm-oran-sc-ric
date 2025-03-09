@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-e2term-deployment
+  name: {{ .Release.Name }}-deployment
   labels:
     app: e2term
 spec:
@@ -17,21 +17,18 @@ spec:
       containers:
         - name: e2term
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           ports:
             - containerPort: {{ .Values.service.port }}
-              protocol: SCTP
-          command:
-            - {{ .Values.command }}
-          args: {{ .Values.args }}
+          command: ["/bin/sh", "-c", "./e2 -p config -f config.conf"]
           env:
-            {{- range ,  := .Values.env }}
-            - name: {{  }}
-              value: {{  | quote }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
-          volumes:
-            {{- toYaml .Values.volumes | nindent 8 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        {{- toYaml .Values.volumes | nindent 8 }}
