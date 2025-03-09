@@ -6,6 +6,7 @@ metadata:
     app: rtmgr
 spec:
   type: ClusterIP
+  clusterIP: None
   ports:
     - port: 3800
       protocol: TCP
