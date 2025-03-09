@@ -5,7 +5,7 @@ metadata:
 data:
   submgr-config.yaml: |
     "local":
-      "host": "submgr-service:8080"
+      "host": "10.128.1.128:8080"
     "logger":
       "level": 1
     "rmr":
@@ -13,7 +13,7 @@ data:
       "maxSize": 8192
       "numWorkers": 1
     "rtmgr":
-      "hostAddr": "rtmgr-service"
+      "hostAddr": "10.128.1.128"
       "port"    : "12020"
       "baseUrl" : "/ric/v1"
     "db":
