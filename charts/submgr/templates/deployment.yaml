@@ -21,7 +21,6 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           command: ./submgr -f $CFG_FILE
-          args: {{ .Values.args }}
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
