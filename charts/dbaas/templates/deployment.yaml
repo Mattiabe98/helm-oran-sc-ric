@@ -19,7 +19,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: 6379
           command: [ "/bin/bash", "-c" ]
           args: 
            - exec redis-server --loadmodule /usr/local/libexec/redismodule/libredismodule.so
