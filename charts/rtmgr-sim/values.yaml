@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: rtmgr-sim
+  repository: docker.io/boing7898/rtmgr-sim
   pullPolicy: IfNotPresent
-  tag: "i-release" # Use .Values.global.tag or specific tag
+  tag: "latest" # Use .Values.global.tag or specific tag
 
 service:
   type: ClusterIP
