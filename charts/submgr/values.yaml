@@ -5,9 +5,6 @@ image:
   pullPolicy: IfNotPresent
   tag: "0.10.1"  # Or use .Values.global.tag
 
-service:
-  port: 8080 # Choose a relevant port
-
 env:
   CFG_FILE: "/opt/config/submgr-config.yaml"
   RMR_SEED_RT: "/opt/config/submgr-uta-rtg.rt"
