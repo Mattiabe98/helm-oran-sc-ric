@@ -4,17 +4,18 @@ metadata:
   name: xapp-script
 data:
   {{- $files := .Files }}
-
+  
   # Including specific files in the root directory
   {{- range tuple "xapp.py" "script2.py" }}
   {{ . }}: |-
-    {{ $files.Get . | trim | indent 4 }}
+    {{ .Files.Get . | trim | indent 4 }}
   {{- end }}
-
+  
   # Including all files inside the lib/ directory (recursively)
   {{- $libFiles := .Files.Glob "lib/**/*" }}
   {{- range $libFiles }}
   {{- $filePath := . }}
-  {{ base $filePath }}: |
-    {{ .Files.Get $filePath | nindent 8 }}
+  {{ $baseName := base $filePath }}  # Extract the base name from the file path
+  {{ $baseName }}: |
+    {{ .Files.Get $filePath | nindent 8 }}  # Access the file content correctly
   {{- end }}
