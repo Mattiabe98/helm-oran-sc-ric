@@ -22,8 +22,9 @@ spec:
             - containerPort: {{ .Values.service.port }}
           command: ["/bin/sh", "-c"]
           args:
-            - mkdir /opt/e2/;
-              ./e2 -p config -f config.conf;
+            - sleep 10000;
+            # - mkdir /opt/e2/;
+            #   ./e2 -p config -f config.conf;
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
