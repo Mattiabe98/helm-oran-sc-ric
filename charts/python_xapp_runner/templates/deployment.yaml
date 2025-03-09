@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-python-xapp-runner-deployment
+  name: {{ .Release.Name }}-deployment
   labels:
     app: python_xapp_runner
 spec:
@@ -21,9 +21,9 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
-            {{- range ,  := .Values.env }}
-            - name: {{  }}
-              value: {{  | quote }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
