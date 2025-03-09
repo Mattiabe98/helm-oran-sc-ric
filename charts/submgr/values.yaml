@@ -9,11 +9,6 @@ service:
   type: ClusterIP
   port: 8080 # Choose a relevant port
 
-command: "./submgr"
-args:
-  - "-f"
-  - "174395{CFG_FILE}"
-
 env:
   CONTAINER_NAME: "ric_submgr"
   HOST_NAME: "ric_submgr_host"
