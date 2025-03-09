@@ -6,7 +6,7 @@ data:
   e2term.conf: |
     nano=38000
     loglevel=info
-    volume=logging
+    volume=log
     #the key name of the environment holds the local ip address
     #ip address of the E2T in the RMR
     local-ip=e2term-service
