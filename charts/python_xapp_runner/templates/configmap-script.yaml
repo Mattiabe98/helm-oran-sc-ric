@@ -17,5 +17,5 @@ data:
   {{- $filePath := . }}  # Store the full file path
   {{- $baseName := base $filePath }}  # Extract the base name of the file
   {{ $baseName }}: |
-    {{ $files.Get $filePath | nindent 8 }}  # Access the file content with the full path
+    {{- $files.Get $filePath | nindent 8 }}  # Access the file content with the full path
   {{- end }}
