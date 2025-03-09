@@ -13,7 +13,7 @@ data:
 
   # Including all files inside the lib/ directory
   {{- $libFiles := .Files.Glob "lib/*" }}
-  {{- range $path, $file := $libFiles }}
-  {{ base $path }}: |
-    {{ .Files.Get $path | nindent 8 }}
+  {{- range $file := $libFiles }}
+  {{ $file.Name | base }}: |
+    {{ .Files.Get $file.Name | nindent 8 }}
   {{- end }}
