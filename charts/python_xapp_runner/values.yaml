@@ -20,16 +20,15 @@ volumeMounts:
   - name: routes-rtg
     mountPath: /opt/ric/config/uta-rtg.rt
     subPath: routes.rtg
-  - name: xapps-python
-    mountPath: /opt/xApps
+  - name: script-volume
+    mountPath: /opt/xApps/
 
 volumes:
   - name: routes-rtg
     configMap:
       name: routes-rtg
-  - name: xapps-python
-    hostPath:
-      path: ./xApps/python # Modify if your xApps are elsewhere
-      type: Directory
+  - name: script-volume
+    configMap:
+      name: {{ .Chart.Name }}-script
 
 resources: {}
