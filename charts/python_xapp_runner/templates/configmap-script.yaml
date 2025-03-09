@@ -6,8 +6,9 @@ data:
   {{- $files := .Files }}
   {{- range tuple "xapp.py" "script2.py" }}
   {{ . }}: |-
-{{ $files.Get . | trim | indent 4 }}
+    {{ $files.Get . | trim | indent 4 }}
   {{- end }}
+  
   {{- $files := .Files.Glob "lib/*" }}
   {{- range $path, $file := $files }}
   {{ base $path }}: |
