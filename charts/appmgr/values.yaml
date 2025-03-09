@@ -12,6 +12,7 @@ env:
   SERVICE_NAME: "ric_appmgr_service"
   RMR_SEED_RT: "/opt/ric/config/router.txt"
   RMR_SRC_ID: "10.0.2.14"
+  DBAAS_SERVICE_HOST: dbaas-service
 
 service:
   httpPort: 8080
