@@ -29,6 +29,6 @@ volumes:
       name: routes-rtg
   - name: script-volume
     configMap:
-      name: {{ .Chart.Name }}-script
+      name: xapp-script
 
 resources: {}
