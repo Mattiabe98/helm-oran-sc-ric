@@ -5,7 +5,8 @@ metadata:
   labels:
     app: rtmgr-sim
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP
+  clusterIP: None
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}
