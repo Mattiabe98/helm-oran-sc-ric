@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: python_xapp_runner
+  repository: docker.io/boing7898/ric-plt-xapp-frame-py
   pullPolicy: IfNotPresent
-  tag: "i-release" # Or use .Values.global.tag
+  tag: "latest" # Or use .Values.global.tag
 
 service:
   type: ClusterIP
