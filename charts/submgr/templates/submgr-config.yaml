@@ -18,7 +18,7 @@ data:
       "baseUrl" : "/ric/v1"
     "db":
       "sessionNamespace": "XMSession"
-      "host": "10.128.1.123:6379"
+      "host": :6809"
       "prot": "tcp"
       "maxIdle": 80
       "maxActive": 12000
