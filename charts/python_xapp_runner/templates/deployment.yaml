@@ -30,12 +30,9 @@ spec:
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
-          volumes:
-            {{- toYaml .Values.volumes | nindent 8 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           stdin: true
           tty: true
-          command: ["/bin/bash"]
-          # You'll likely need to adjust this depending on how your xApps are run
-          # command: ["/bin/bash", "-c", "python /opt/xApps/your_xapp.py"]
+      volumes:
+        {{- toYaml .Values.volumes | nindent 8 }}
