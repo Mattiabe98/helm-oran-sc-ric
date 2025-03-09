@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-dbaas-deployment
+  name: {{ .Release.Name }}-deployment
   labels:
     app: dbaas
 spec:
@@ -20,9 +20,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}
-          command:
-            - {{ .Values.command }}
-          args: {{ .Values.args }}
+          command: [ "/bin/bash", "-c" ]
+          args: 
+           - exec redis-server --loadmodule /usr/local/libexec/redismodule/libredismodule.so
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
