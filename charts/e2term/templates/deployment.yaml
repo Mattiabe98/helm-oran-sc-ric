@@ -14,10 +14,14 @@ spec:
       labels:
         app: e2term
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: e2term
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          securityContext:
+              {{- toYaml .Values.securityContext | nindent 12 }}
           ports:
             - containerPort: {{ .Values.service.port }}
           command: ["/bin/sh", "-c"]
