@@ -35,3 +35,17 @@ volumes:
       name: e2term-rtg
 
 resources: {}
+
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+
+securityContext:
+ capabilities:
+    add:
+     - SYS_NICE
+     - NET_ADMIN
+     - NET_RAW
+    drop:
+     - ALL
+ privileged: true
