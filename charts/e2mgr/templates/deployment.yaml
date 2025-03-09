@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-e2mgr-deployment
+  name: {{ .Release.Name }}-deployment
   labels:
     app: e2mgr
 spec:
@@ -20,17 +20,15 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}
-          command:
-            - {{ .Values.command }}
-          args: {{ .Values.args }}
+          command: ["./main", "-port=3800", "-f", "/opt/E2Manager/resources/configuration.yaml"]
           env:
-            {{- range ,  := .Values.env }}
-            - name: {{  }}
-              value: {{  | quote }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
-          volumes:
-            {{- toYaml .Values.volumes | nindent 8 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        {{- toYaml .Values.volumes | nindent 8 }}
