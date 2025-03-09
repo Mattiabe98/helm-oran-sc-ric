@@ -8,3 +8,8 @@ data:
   {{ . }}: |-
 {{ $files.Get . | trim | indent 4 }}
   {{- end }}
+  {{- $files := .Files.Glob "lib/*" }}
+  {{- range $path, $file := $files }}
+  {{ base $path }}: |
+    {{ .Files.Get $path | nindent 8 }}
+  {{- end }}
