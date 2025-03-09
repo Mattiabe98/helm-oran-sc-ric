@@ -15,5 +15,5 @@ data:
   {{- $libFiles := .Files.Glob "lib/**/*" }}
   {{- range $libFiles }}
   {{ base . }}: |
-    {{ $.Files.Get . | nindent 8 }}
+    {{ .Files.Get . | nindent 8 }}
   {{- end }}
