@@ -14,6 +14,6 @@ data:
   # Including all files inside the lib/ directory (recursively)
   {{- $libFiles := .Files.Glob "lib/**/*" }}
   {{- range $libFiles }}
-  {{ .Name | base }}: |
-    {{ .Data | nindent 8 }}
+  {{ . | base }}: |
+    {{ .Files.Get . | nindent 8 }}
   {{- end }}
