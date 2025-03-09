@@ -9,7 +9,7 @@ data:
 {{ $files.Get . | trim | indent 4 }}
   {{- end }}
   {{- range $path, $bytes := .Files.Glob "lib/**" }}
-  {{- if not (IsDir $path) }}
+  {{- if not ($.Files.Stat $path).IsDir }}
   {{ $path }}: |-
 {{ $bytes | toString | trim | indent 4 }}
   {{- end }}
