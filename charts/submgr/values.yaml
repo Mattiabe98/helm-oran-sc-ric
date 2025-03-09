@@ -6,7 +6,6 @@ image:
   tag: "0.10.1"  # Or use .Values.global.tag
 
 service:
-  type: ClusterIP
   port: 8080 # Choose a relevant port
 
 env:
