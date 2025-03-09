@@ -6,10 +6,10 @@ data:
   e2term.conf: |
     nano=38000
     loglevel=info
-    volume=log
+    volume=logging
     #the key name of the environment holds the local ip address
     #ip address of the E2T in the RMR
-    local-ip=10.0.2.10
+    local-ip=e2term-service
     #trace is start, stop
     trace=stop
     external-fqdn=e2t.com
