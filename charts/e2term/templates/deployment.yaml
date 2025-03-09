@@ -21,6 +21,7 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
           command: ["/bin/sh", "-c"]
+          args:
             - mkdir /opt/e2/;
               ./e2 -p config -f config.conf;
           env:
