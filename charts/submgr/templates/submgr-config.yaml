@@ -5,9 +5,9 @@ metadata:
 data:
   submgr-config.yaml: |
     "local":
-      "host": "10.128.1.128:8080"
+      "host": ":8080"
     "logger":
-      "level": 1
+      "level": 3
     "rmr":
       "protPort" : "tcp:4560"
       "maxSize": 8192
