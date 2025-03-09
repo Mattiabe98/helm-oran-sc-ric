@@ -18,8 +18,6 @@ spec:
         - name: submgr
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
-          ports:
-            - containerPort: {{ .Values.service.port }}
           command: ["/bin/sh", "-c", "./submgr -f $CFG_FILE"]
           env:
             {{- range $key, $value := .Values.env }}
