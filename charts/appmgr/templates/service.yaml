@@ -5,7 +5,8 @@ metadata:
   labels:
     app: appmgr
 spec:
-  type: {{ .Values.service.type }}
+  type: ClusterIP
+  clusterIP: None
   ports:
     - name: http
       port: {{ .Values.service.httpPort }}  # Exposed service port
