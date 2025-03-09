@@ -20,6 +20,7 @@ spec:
         - name: e2term
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          serviceAccountName: e2term-service-account
           securityContext:
               {{- toYaml .Values.securityContext | nindent 12 }}
           ports:
