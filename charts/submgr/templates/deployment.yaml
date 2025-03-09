@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-submgr-deployment
+  name: {{ .Release.Name }}-deployment
   labels:
     app: submgr
 spec:
@@ -20,13 +20,12 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}
-          command:
-            - {{ .Values.command }}
+          command: ./submgr -f $CFG_FILE
           args: {{ .Values.args }}
           env:
-            {{- range ,  := .Values.env }}
-            - name: {{  }}
-              value: {{  | quote }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
