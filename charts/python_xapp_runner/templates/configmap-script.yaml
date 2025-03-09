@@ -8,7 +8,7 @@ data:
   # Including specific files in the root directory
   {{- range tuple "xapp.py" "script2.py" }}
   {{ . }}: |-
-    {{- (string (.Files.Get .)) | trim | indent 4 }}
+    {{- .Files.Get . | toString | trim | indent 4 }}
   {{- end }}
 
   # Including all files inside the lib/ directory (recursively)
@@ -17,5 +17,5 @@ data:
   {{- $filePath := . }}
   {{- $baseName := base $filePath }}
   {{ $baseName }}: |
-    {{- (string (.Files.Get $filePath)) | nindent 8 }}
+    {{- .Files.Get $filePath | toString | nindent 8 }}
   {{- end }}
