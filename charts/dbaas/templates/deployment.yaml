@@ -20,7 +20,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 6379
-          command: 
+          command: ["/bin/sh", "-c"]
           args: 
             - chmod 777 /data/;
               redis-server --loadmodule /usr/local/libexec/redismodule/libredismodule.so;
