@@ -8,7 +8,7 @@ image:
 env:
   CFG_FILE: "/opt/config/submgr-config.yaml"
   RMR_SEED_RT: "/opt/config/submgr-uta-rtg.rt"
-  RMR_SRC_ID: "10.0.2.13"
+  RMR_SRC_ID: "submgr-service"
   DBAAS_SERVICE_HOST: dbaas-service  
 
 volumeMounts:
