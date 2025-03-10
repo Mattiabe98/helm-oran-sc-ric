@@ -1,75 +1,50 @@
-#
-#==================================================================================
-#   Copyright (c) 2019 AT&T Intellectual Property.
-#   Copyright (c) 2019 Nokia
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-#
-#  
-#   This source code is part of the near-RT RIC (RAN Intelligent Controller)
-#   platform project (RICP).
-#
-#==================================================================================
-#
-#
-#   Abstract:           Configuration values for the routing manager
-#   Date:               29 May 2019
-#
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: rtmgrcfg
 data:
-  # FQDN and port info of the platform components for routing manager to form and distribute corresponding routes to them
   rtmgr-config.yaml: |
-    "XMURL": "http://{{ .Values.servicename.appmgr.http }}:{{ .Values.serviceport.appmgr.http }}/ric/v1/xapps"
-    "E2MURL": "http://{{ .Values.servicename.e2mgr.http }}:{{ .Values.serviceport.e2mgr.http }}/v1/e2t/list"
-    "SBI": "{{ .Values.rtmgr.sbi }}"
-    "SBIURL": "{{ .Values.rtmgr.sbiurl }}"
-    "NBI": "{{ .Values.rtmgr.nbi }}"
-    "NBIURL": "http://{{ .Values.servicename.rtmgr.http }}:{{ .Values.serviceport.rtmgr.http }}"
-    "SDL": "file"
-    "local":
-      "host": ":8086"
-    "logger":
-      "level": 4
-    "rmr":
-      "protPort": "tcp:4560"
-      "maxSize": 2072
-      "maxRetryOnFailure": 5
-      "threadType": 0
-      "mtypes" :
-        - "name": "TESTNAME1"
-          "id" : 55555
-        - "name": "TESTNAME2"
-          "id" : 55556
-      "lowLatency": False
-      "fastAck": False
-    "subscription":
-        "host": "localhost:8088"
-        "timeout": 2
-        "retryCount": 10
-        "retryDelay": 5
-    "db":
-      "namespace": "sdl"
-      "waitForSdl": false
-    "test":
-      "mode": "forwarder"
-      "mtype": 10004
-      "subId": 1111
-      "size": 100
-      "rate": 10
-      "amount": 10
-      "rounds": 1
-      "store": 0
-      "waitForAck": 0
+    PlatformComponents:
+      - name: "SUBMAN"
+        fqdn: "{{ .Values.servicename.submgr.rmr }}"
+        port: {{ .Values.serviceport.submgr.rmr.data }}
+      - name: "E2MAN"
+        fqdn: "{{ .Values.servicename.e2mgr.rmr }}"
+        port: {{ .Values.serviceport.e2mgr.rmr.data }}
+
+    XMURL: "http://{{ .Values.servicename.appmgr.http }}:{{ .Values.serviceport.appmgr.http }}/ric/v1/xapps"
+    E2MURL: "http://{{ .Values.servicename.e2mgr.http }}:{{ .Values.serviceport.e2mgr.http }}/v1/e2t/list"
+    RTFILE: "/db/rt.json"
+    CFGFILE: "/cfg/rtmgr-config.yaml"
+    RPE: "{{ .Values.rtmgr.rpe }}"
+    SBI: "{{ .Values.rtmgr.sbi }}"
+    SBIURL: "{{ .Values.rtmgr.sbiurl }}"
+    NBI: "{{ .Values.rtmgr.nbi }}"
+    NBIURL: "http://{{ .Values.servicename.rtmgr.http }}:{{ .Values.serviceport.rtmgr.http }}"
+    SDL: "file"
+    local:
+      host: ":8080"
+    logger:
+      level: 4
+    periodicRoutes:
+      enable: true # or false, depending on your desired default
+    rmr:
+      protPort: "tcp:4560"
+      maxSize: 1024
+      numWorkers: 1
+      threadType: 1
+    subscription:
+      host: "submgr-service:8080" # Or use a templated value: "{{ .Values.subscription.host }}"
+
+    messagetypes:
+      - "RIC_HEALTH_CHECK_REQ=100"
+      - "RIC_HEALTH_CHECK_RESP=101"
+      - "RIC_ALARM=110"
+      - "RIC_ALARM_QUERY=111"
+
+    PlatformRoutes:
+      - messagetype: 'RIC_SUB_REQ'
+        senderendpoint: 'SUBMAN'
+        subscriptionid: -1
+        endpoint: ''
+        meid: '%meid'
