@@ -32,13 +32,13 @@ metadata:
 data:
   # FQDN and port info of the platform components for routing manager to form and distribute corresponding routes to them
   rtmgr-config.yaml: |
-    "SDL": "file"
     "XMURL": "http://{{ .Values.servicename.appmgr.http }}:{{ .Values.serviceport.appmgr.http }}/ric/v1/xapps"
     "E2MURL": "http://{{ .Values.servicename.e2mgr.http }}:{{ .Values.serviceport.e2mgr.http }}/v1/e2t/list"
     "SBI": "{{ .Values.rtmgr.sbi }}"
     "SBIURL": "{{ .Values.rtmgr.sbiurl }}"
     "NBI": "{{ .Values.rtmgr.nbi }}"
     "NBIURL": "http://{{ .Values.servicename.rtmgr.http }}:{{ .Values.serviceport.rtmgr.http }}"
+    "SDL": "file"
     "local":
       "host": ":8086"
     "logger":
