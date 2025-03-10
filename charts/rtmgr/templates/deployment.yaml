@@ -19,7 +19,13 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - name: "http"
+              containerPort: {{ include "Values.serviceport.rtmgr.http" . }}
+            - name: "rmrroute"
+              containerPort: {{ include "Values.serviceport.rtmgr.rmr.route" . }}
+            - name: "rmrdata"
+              containerPort: {{ include "Values.serviceport.rtmgr.rmr.data" . }}
+          command: ["/run_rtmgr.sh"]
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
