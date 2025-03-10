@@ -9,17 +9,17 @@ data:
        "PlatformComponents":
          -
            "name": "SUBMAN"
-           "fqdn": {{ include "Values.servicename.submgr.rmr" . }}
-           "port": {{ include "Values.serviceport.submgr.rmr.data" . }}
+           "fqdn": {{ .Values.servicename.submgr.rmr" }}
+           "port": {{ .Values.serviceport.submgr.rmr.data" }}
          -
            "name": "E2MAN"
-           "fqdn": {{ include "Values.servicename.e2mgr.rmr" . }}
-           "port": {{ include "Values.serviceport.e2mgr.rmr.data" . }}
+           "fqdn": {{ .Values.servicename.e2mgr.rmr" }}
+           "port": {{ .Values.serviceport.e2mgr.rmr.data" }}
 
        "XMURL":
-         "http://{{ include "Values.servicename.appmgr.http" . }}:{{ include "Values.serviceport.appmgr.http" . }}/ric/v1/xapps"
+         "http://{{ .Values.servicename.appmgr.http" }}:{{ .Values.serviceport.appmgr.http" }}/ric/v1/xapps"
        "E2MURL":
-         "http://{{ include "Values.servicename.e2mgr.http" . }}:{{ include "Values.serviceport.e2mgr.http" . }}/v1/e2t/list"
+         "http://{{ .Values.servicename.e2mgr.http" }}:{{ .Values.serviceport.e2mgr.http" }}/v1/e2t/list"
        "RTFILE":
          "/db/rt.json"
        "CFGFILE":
@@ -33,7 +33,7 @@ data:
        "NBI":
          "{{ .Values.rtmgr.nbi }}"
        "NBIURL":
-         "http://{{ include "Values.servicename.rtmgr.http" . }}:{{ include "Values.serviceport.rtmgr.http" . }}"
+         "http://{{ .Values.servicename.rtmgr.http" }}:{{ .Values.serviceport.rtmgr.http" }}"
        "SDL":
          "file"
        "local":
