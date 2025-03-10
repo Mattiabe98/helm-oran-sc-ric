@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-rtmgr-sim-deployment
+  name: {{ .Release.Name }}
   labels:
-    app: rtmgr-sim
+    app: rtmgr
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: rtmgr-sim
+      app: rtmgr
   template:
     metadata:
       labels:
-        app: rtmgr-sim
+        app: rtmgr
     spec:
       containers:
-        - name: rtmgr-sim
+        - name: rtmgr
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}
           env:
-            {{- range ,  := .Values.env }}
-            - name: {{  }}
-              value: {{  | quote }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
