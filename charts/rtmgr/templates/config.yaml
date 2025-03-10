@@ -34,7 +34,7 @@ data:
       numWorkers: 1
       threadType: 1
     subscription:
-      host: "submgr-service:8080" # Or use a templated value: "{{ .Values.subscription.host }}"
+      host: "submgr-service:8080"
 
     messagetypes:
       - "RIC_HEALTH_CHECK_REQ=100"
