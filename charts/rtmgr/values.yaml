@@ -7,12 +7,12 @@ image:
 
 env:
   CONTAINER_NAME: "ric_rtmgr-sim"
-  HOST_NAME: "ric_rtmgr-sim_host"
+  HOST_NAME: "rtmgr-service"
   POD_NAME: "rtmgr-sim_pod"
   SERVICE_NAME: "ric_rtmgr-sim_service"
   CFGFILE: "/cfg/rtmgr-config.yaml"
   RMR_SEED_RT: "/opt/config/uta-rtg.rt"
-  RMR_SRC_ID: "10.0.2.15"
+  RMR_SRC_ID: "rtmgr-service"
   DBAAS_SERVICE_HOST: dbaas-service
 
 rtmgr:
