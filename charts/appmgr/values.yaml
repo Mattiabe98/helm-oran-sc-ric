@@ -7,11 +7,11 @@ image:
 
 env:
   CONTAINER_NAME: "ric_appmgr"
-  HOST_NAME: "ric_appmgr_host"
+  HOST_NAME: "appmgr-service"
   POD_NAME: "appmgr_pod"
   SERVICE_NAME: "ric_appmgr_service"
   RMR_SEED_RT: "/opt/ric/config/router.txt"
-  RMR_SRC_ID: "10.0.2.14"
+  RMR_SRC_ID: "appmgr-service"
   DBAAS_SERVICE_HOST: dbaas-service
 
 service:
