@@ -22,7 +22,7 @@ spec:
             - containerPort: 6379
           command: ["/bin/sh", "-c"]
           args: 
-              redis-server --loadmodule /usr/local/libexec/redismodule/libredismodule.so;
+            - redis-server --loadmodule /usr/local/libexec/redismodule/libredismodule.so;
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
