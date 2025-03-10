@@ -20,11 +20,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: "http"
-              containerPort: {{ include "Values.serviceport.rtmgr.http" . }}
+              containerPort: {{ .Values.serviceport.rtmgr.http }}
             - name: "rmrroute"
-              containerPort: {{ include "Values.serviceport.rtmgr.rmr.route" . }}
+              containerPort: {{ .Values.serviceport.rtmgr.rmr.route }}
             - name: "rmrdata"
-              containerPort: {{ include "Values.serviceport.rtmgr.rmr.data" . }}
+              containerPort: {{ .Values.serviceport.rtmgr.rmr.data }}
           command: ["/run_rtmgr.sh"]
           env:
             {{- range $key, $value := .Values.env }}
