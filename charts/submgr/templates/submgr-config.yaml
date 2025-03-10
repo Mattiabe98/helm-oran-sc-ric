@@ -13,12 +13,12 @@ data:
       "maxSize": 8192
       "numWorkers": 1
     "rtmgr":
-      "hostAddr": "10.128.1.128"
-      "port"    : "12020"
+      "hostAddr": "rtmgr-service"
+      "port"    : "8989"
       "baseUrl" : "/ric/v1"
     "db":
       "sessionNamespace": "XMSession"
-      "host": :6809"
+      "host": dbaas-service:6809"
       "prot": "tcp"
       "maxIdle": 80
       "maxActive": 12000
