@@ -25,7 +25,10 @@ spec:
               containerPort: {{ .Values.serviceport.rtmgr.rmr.route }}
             - name: "rmrdata"
               containerPort: {{ .Values.serviceport.rtmgr.rmr.data }}
-          command: ["/run_rtmgr.sh"]
+          # command: ["/run_rtmgr.sh"]
+          command: ["/bin/sh", "-c"]
+          args:
+            - sleep 10000;
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
