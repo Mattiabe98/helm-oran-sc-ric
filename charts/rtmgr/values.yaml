@@ -13,6 +13,7 @@ env:
   CFGFILE: "/cfg/rtmgr-config.yaml"
   RMR_SEED_RT: "/opt/config/uta-rtg.rt"
   RMR_SRC_ID: "10.0.2.15"
+  DBAAS_SERVICE_HOST: dbaas-service
 
 rtmgr:
   rpe: rmrpush
