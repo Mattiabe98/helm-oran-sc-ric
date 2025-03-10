@@ -8,17 +8,17 @@ spec:
   type: ClusterIP
   clusterIP: None
   ports:
-    - port: 3800
-      protocol: TCP
+    - port: {{ include "Values.serviceport.rtmgr.http" . }}
+      protocol: "TCP"
       name: "http"
-      targetPort: 3800
-    - port: 4561
+      targetPort: "http"
+    - port: {{ include "Values.serviceport.rtmgr.rmr.route" . }}
       protocol: TCP
-      targetPort: 4561
+      targetPort: "rmrroute"
       name: "rmrroute"
-    - port: 4560
+    - port: {{ include "Values.serviceport.rtmgr.rmr.data" . }}
       protocol: TCP
-      targetPort: 4560
+      targetPort: "rmrdata"
       name: "rmrdata"
   selector:
     app: rtmgr
