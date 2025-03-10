@@ -47,8 +47,11 @@ data:
          "maxSize": 1024
          "numWorkers": 1
          "threadType": 1
-       "subscription":
-         "host": "submgr-service:8080"
+       "controls":
+         "logger":
+           "level": 4
+         "subscription":
+           "host": "submgr-service:8080"
        "messagetypes": [
           "RIC_HEALTH_CHECK_REQ=100",
           "RIC_HEALTH_CHECK_RESP=101",
