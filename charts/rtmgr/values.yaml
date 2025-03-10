@@ -22,12 +22,12 @@ rtmgr:
   nbiurl: http://0.0.0.0:8888
 
 volumeMounts:
-  - name: rtmgr-config
-    mountPath: /opt/rmsimulator/resources/configuration.yaml
+  - name: rtmgrcfg
+    mountPath: /cfg/rtmgr-config.yaml
     subPath: rtmgr-config.yaml
-  - name: routes-rtg
-    mountPath: /opt/config/uta-rtg.rt
-    subPath: routes.rtg
+  # - name: routes-rtg
+  #   mountPath: /opt/config/uta-rtg.rt
+  #   subPath: routes.rtg
 
 servicename:
   appmgr:
@@ -57,9 +57,9 @@ serviceport:
 
 
 volumes:
-  - name: rtmgr-config
+  - name: rtmgrcfg
     configMap:
-      name: rtmgr-config
+      name: rtmgrcfg
   - name: routes-rtg
     configMap:
       name: routes-rtg
