@@ -6,9 +6,7 @@ data:
   rtmgr-config.yaml: |
     "controls":
       "subscription":
-        "host": "submgr-service:8080"
-      "logger":
-        "level": 4
+        "host": "submgr-service:8088"
     PlatformComponents:
       - name: "SUBMAN"
         fqdn: "{{ .Values.servicename.submgr.rmr }}"
