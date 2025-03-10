@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: rtmgrcfg
 data:
-  rtmgrcfg: |
+  rtmgr-config.yaml: |
        "controls":
          "subscription":
            "host": "submgr-service:8080" 
