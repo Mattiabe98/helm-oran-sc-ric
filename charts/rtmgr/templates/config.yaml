@@ -10,21 +10,17 @@ data:
        "PlatformComponents":
          -
            "name": "SUBMAN"
-           "fqdn": "{{ printf "%s.%s" (include "common.servicename.submgr.rmr" .) (include "common.namespace.platform" .) }}"
-           "port": {{ include "common.serviceport.submgr.rmr.data" . }}
+           "fqdn": {{ .Values.servicename.submgr.rmr }}
+           "port": {{ .Values.serviceport.submgr.rmr.data }}
          -
            "name": "E2MAN"
-           "fqdn": "{{ printf "%s.%s" (include "common.servicename.e2mgr.rmr" .) (include "common.namespace.platform" .) }}"
-           "port": {{ include "common.serviceport.e2mgr.rmr.data" . }}
-         -
-           "name": "A1MEDIATOR"
-           "fqdn": "{{ printf "%s.%s" (include "common.servicename.a1mediator.rmr" .) (include "common.namespace.platform" .) }}"
-           "port": {{ include "common.serviceport.a1mediator.rmr.data" . }}
+           "fqdn": {{ .Values.servicename.e2mgr.rmr }}
+           "port": {{ .Values.serviceport.e2mgr.rmr.data }}
 
        "XMURL":
-         "http://{{ include "common.servicename.appmgr.http" . }}:{{ include "common.serviceport.appmgr.http" . }}/ric/v1/xapps"
+         "http://{{ .Values.servicename.appmgr.http }}:{{ .Values.serviceport.appmgr.http }}/ric/v1/xapps"
        "E2MURL":
-         "http://{{ include "common.servicename.e2mgr.http" . }}:{{ include "common.serviceport.e2mgr.http" . }}/v1/e2t/list"
+         "http://{{ .Values.servicename.e2mgr.http }}:{{ .Values.serviceport.e2mgr.http }}/v1/e2t/list"
        "RTFILE":
          "/db/rt.json"
        "CFGFILE":
@@ -38,7 +34,7 @@ data:
        "NBI":
          "{{ .Values.rtmgr.nbi }}"
        "NBIURL":
-         "http://{{ include "common.servicename.rtmgr.http" . }}:{{ include "common.serviceport.rtmgr.http" . }}"
+         "http://{{ .Values.servicename.rtmgr.http }}:{{ .Values.serviceport.rtmgr.http }}"
        "SDL":
          "file"
        "local":
