@@ -28,4 +28,4 @@ data:
         },
         "PlatformRoutes": [ {"messagetype" : "RIC_SUB_REQ", "senderendpoint": "SUBMAN", "subscriptionid": -1, "endpoint": "", "meid": "%meid"} ]
       
-      }
+        }
