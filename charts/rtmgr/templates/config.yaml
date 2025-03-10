@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-config
+  name: rtmgrcfg
 data:
   # FQDN and port info of the platform components for routing manager to form
   # and distribute corresponding routes to them
@@ -9,17 +9,17 @@ data:
        "PlatformComponents":
          -
            "name": "SUBMAN"
-           "fqdn": "submgr-service"
-           "port": 8080
+           "fqdn": {{ include "Values.servicename.submgr.rmr" . }}
+           "port": {{ include "Values.serviceport.submgr.rmr.data" . }}
          -
            "name": "E2MAN"
-           "fqdn": "e2mgr-service"
-           "port": 3801
+           "fqdn": {{ include "Values.servicename.e2mgr.rmr" . }}
+           "port": {{ include "Values.serviceport.e2mgr.rmr.data" . }}
 
        "XMURL":
-         "http://{{ include "common.servicename.appmgr.http" . }}:{{ include "common.serviceport.appmgr.http" . }}/ric/v1/xapps"
+         "http://{{ include "Values.servicename.appmgr.http" . }}:{{ include "Values.serviceport.appmgr.http" . }}/ric/v1/xapps"
        "E2MURL":
-         "http://{{ include "common.servicename.e2mgr.http" . }}:{{ include "common.serviceport.e2mgr.http" . }}/v1/e2t/list"
+         "http://{{ include "Values.servicename.e2mgr.http" . }}:{{ include "Values.serviceport.e2mgr.http" . }}/v1/e2t/list"
        "RTFILE":
          "/db/rt.json"
        "CFGFILE":
@@ -33,7 +33,7 @@ data:
        "NBI":
          "{{ .Values.rtmgr.nbi }}"
        "NBIURL":
-         "http://{{ include "common.servicename.rtmgr.http" . }}:{{ include "common.serviceport.rtmgr.http" . }}"
+         "http://{{ include "Values.servicename.rtmgr.http" . }}:{{ include "Values.serviceport.rtmgr.http" . }}"
        "SDL":
          "file"
        "local":
