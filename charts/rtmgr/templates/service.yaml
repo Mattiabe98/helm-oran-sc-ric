@@ -8,15 +8,15 @@ spec:
   type: ClusterIP
   clusterIP: None
   ports:
-    - port: {{ values.serviceport.rtmgr.http }}
+    - port: {{ .Values.serviceport.rtmgr.http }}
       protocol: "TCP"
       name: "http"
       targetPort: "http"
-    - port: {{ include "Values.serviceport.rtmgr.rmr.route" . }}
+    - port: {{ .Values.serviceport.rtmgr.rmr.route }}
       protocol: TCP
       targetPort: "rmrroute"
       name: "rmrroute"
-    - port: {{ include "Values.serviceport.rtmgr.rmr.data" . }}
+    - port: {{ .Values.serviceport.rtmgr.rmr.data }}
       protocol: TCP
       targetPort: "rmrdata"
       name: "rmrdata"
