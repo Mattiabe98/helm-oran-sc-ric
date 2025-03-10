@@ -32,6 +32,8 @@ metadata:
 data:
   # FQDN and port info of the platform components for routing manager to form and distribute corresponding routes to them
   rtmgr-config.yaml: |
+    "NBI": "{{ .Values.rtmgr.nbi }}"
+    "NBIURL": "http://{{ .Values.servicename.rtmgr.http }}:{{ .Values.serviceport.rtmgr.http }}"
     "local":
       "host": ":8086"
     "logger":
