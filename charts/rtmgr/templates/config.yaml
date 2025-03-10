@@ -4,9 +4,6 @@ metadata:
   name: rtmgrcfg
 data:
   rtmgr-config.yaml: |
-    "controls":
-      "subscription":
-        "host": "submgr-service:8080"
     subscription:
         host: "submgr-service:8080"    
     "subscription":
