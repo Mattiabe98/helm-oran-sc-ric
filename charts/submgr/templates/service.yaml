@@ -12,5 +12,9 @@ spec:
       targetPort: 8080
       protocol: TCP
       name: submgr
+    - port: 8088
+      targetPort: 8088
+      protocol: TCP
+      name: subscription
   selector:
     app: submgr
