@@ -5,7 +5,7 @@ metadata:
 data:
   # FQDN and port info of the platform components for routing manager to form
   # and distribute corresponding routes to them
-  rtmgrcfg: |
+  rtmgr-config.yaml: |
        "PlatformComponents":
          -
            "name": "SUBMAN"
