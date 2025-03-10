@@ -28,8 +28,8 @@ spec:
           # command: ["/run_rtmgr.sh"]
           command: ["/bin/sh", "-c"]
           args:
-            - ./rtmgr -f $CFGFILE
-            # - sleep 10000;
+            #- ./rtmgr -f $CFGFILE
+            - sleep 10000;
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
