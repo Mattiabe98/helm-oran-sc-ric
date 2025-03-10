@@ -20,7 +20,10 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 6379
-          command: [ "redis-server", "--loadmodule /usr/local/libexec/redismodule/libredismodule.so" ]
+          command: 
+          args: 
+            - chmod 777 /data/;
+              redis-server --loadmodule /usr/local/libexec/redismodule/libredismodule.so;
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
