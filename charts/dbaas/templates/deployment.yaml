@@ -22,9 +22,14 @@ spec:
             - containerPort: 6379
           command: ["/bin/sh", "-c"]
           args: 
-            - chmod 777 /data/;
-              redis-server --loadmodule /usr/local/libexec/redismodule/libredismodule.so;
+            - redis-server --loadmodule /usr/local/libexec/redismodule/libredismodule.so;
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /data
+              readOnly: false
       volumes:
-        {{- toYaml .Values.volumes | nindent 8 }}
+        - name: config-volume
+          configMap:
+            name: dbaas-config
