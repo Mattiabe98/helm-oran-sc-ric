@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: nexus3.o-ran-sc.org:10002/o-ran-sc/ric-plt-rtmgr
   pullPolicy: IfNotPresent
-  tag: "0.5.1" # Use .Values.global.tag or specific tag
+  tag: "0.5.8" # Use .Values.global.tag or specific tag
 
 env:
   CONTAINER_NAME: "ric_rtmgr-sim"
