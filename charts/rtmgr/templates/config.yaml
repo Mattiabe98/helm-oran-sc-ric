@@ -4,6 +4,13 @@ metadata:
   name: rtmgrcfg
 data:
   rtmgr-config.yaml: |
+    "controls":
+      "subscription":
+        "host": "submgr-service:8080"
+    subscription:
+        host: "submgr-service:8080"    
+    "subscription":
+        "host": "submgr-service:8080"    
     PlatformComponents:
       - name: "SUBMAN"
         fqdn: "{{ .Values.servicename.submgr.rmr }}"
@@ -33,8 +40,9 @@ data:
       maxSize: 1024
       numWorkers: 1
       threadType: 1
-    subscription:
-      host: "submgr-service:8080"
+    controls:
+      subscription:
+        host: "submgr-service:8080"
 
     messagetypes:
       - "RIC_HEALTH_CHECK_REQ=100"
