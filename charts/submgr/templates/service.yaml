@@ -11,6 +11,18 @@ spec:
     - port: 8088
       targetPort: 8088
       protocol: TCP
-      name: subscription
+      name: http
+    - port: 3800
+      targetPort: 3800
+      protocol: TCP
+      name: http1
+    - port: 4560
+      targetPort: 4560
+      protocol: TCP
+      name: http2
+    - port: 4561
+      targetPort: 4561
+      protocol: TCP
+      name: http3
   selector:
     app: submgr
