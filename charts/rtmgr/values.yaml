@@ -14,6 +14,13 @@ env:
   RMR_SEED_RT: "/opt/config/uta-rtg.rt"
   RMR_SRC_ID: "10.0.2.15"
 
+rtmgr:
+  rpe: rmrpush
+  sbi: rmrpush
+  sbiurl: 0.0.0.0
+  nbi: httpRESTful
+  nbiurl: http://0.0.0.0:8888
+
 volumeMounts:
   - name: rtmgr-config
     mountPath: /opt/rmsimulator/resources/configuration.yaml
@@ -21,6 +28,33 @@ volumeMounts:
   - name: routes-rtg
     mountPath: /opt/config/uta-rtg.rt
     subPath: routes.rtg
+
+servicename:
+  appmgr:
+    http: appmgr-service
+  e2mgr:
+    http: e2mgr-service
+  submgr:
+    rmr: submgr-service
+  rtmgr:
+    http: rtmgr-service
+
+serviceport:
+  appmgr:
+    http: 8080
+  e2mgr:
+    http: 3800
+    rmr:
+      data: 3801
+      route: 4561
+  submgr:
+    http: 3800
+    rmr:
+      data: 4560
+      route: 4561
+  rtmgr:
+    http: 3800
+
 
 volumes:
   - name: rtmgr-config
