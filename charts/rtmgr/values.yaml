@@ -54,6 +54,9 @@ serviceport:
       route: 4561
   rtmgr:
     http: 3800
+    rmr:
+      data: 4560
+      route: 4561
 
 
 volumes:
