@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: nexus3.o-ran-sc.org:10002/o-ran-sc/ric-plt-rtmgr
   pullPolicy: IfNotPresent
-  tag: "0.3.9" # Use .Values.global.tag or specific tag
+  tag: "0.5.1" # Use .Values.global.tag or specific tag
 
 env:
   CONTAINER_NAME: "ric_rtmgr-sim"
@@ -13,14 +13,16 @@ env:
   CFGFILE: "/cfg/rtmgr-config.yaml"
   RMR_SEED_RT: "/opt/config/uta-rtg.rt"
   RMR_SRC_ID: "rtmgr-service"
-  DBAAS_SERVICE_HOST: dbaas-service
+  XM_URL: "http://appmgr-service:8080/ric/v1/xapps"
+  DBAAS_SERVICE_HOST: "dbaas-service"
+  RTFILE: "/db/rt.json"
 
 rtmgr:
   rpe: rmrpush
   sbi: rmrpush
   sbiurl: 0.0.0.0
   nbi: httpRESTful
-  nbiurl: http://0.0.0.0:8888
+  nbiurl: http://rtmgr-service:3800
 
 volumeMounts:
   - name: rtmgrcfg
