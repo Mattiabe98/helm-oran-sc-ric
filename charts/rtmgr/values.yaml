@@ -35,6 +35,7 @@ servicename:
     http: appmgr-service
   e2mgr:
     http: e2mgr-service
+    rmr: e2mgr-service
   submgr:
     rmr: submgr-service
   rtmgr:
