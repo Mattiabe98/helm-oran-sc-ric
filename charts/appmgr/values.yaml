@@ -6,11 +6,10 @@ image:
   tag: "0.5.7" # Or use .Values.global.tag
 
 env:
-  CONTAINER_NAME: "ric_appmgr"
+  CONTAINER_NAME: "appmgr"
   HOST_NAME: "appmgr-service"
   POD_NAME: "appmgr_pod"
-  SERVICE_NAME: "ric_appmgr_service"
-  #RMR_SEED_RT: "/opt/ric/config/router.txt"
+  SERVICE_NAME: "appmgr-service"
   RMR_SRC_ID: "appmgr-service"
   RMR_RTG_SVC: 4561
   DBAAS_SERVICE_HOST: dbaas-service
