@@ -11,17 +11,17 @@ spec:
     - port: 36421
       targetPort: 36421
       protocol: SCTP
-      name: e2term
+      name: e2term1
     - port: 38000
       targetPort: 38000
       protocol: TCP
-      name: e2term
+      name: e2term2
     - port: 4561
       targetPort: 4561
       protocol: TCP
-      name: e2term
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
+      name: e2term3
+    - port: 8080
+      targetPort: 8080
       protocol: TCP
       name: e2term            
   selector:
