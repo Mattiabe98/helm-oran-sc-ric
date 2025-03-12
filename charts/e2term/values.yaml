@@ -18,16 +18,16 @@ env:
   sctp: 36421
   nano: 38000
   RMR_RTG_SVC: 4561
-  #RMR_SEED_RT: "/opt/e2/dockerRouter.txt"
+  RMR_SEED_RT: "/opt/e2/dockerRouter.txt"
   RMR_SRC_ID: "e2term-service"
 
 volumeMounts:
   - name: e2term-config
     mountPath: /opt/e2/config/config.conf
     subPath: e2term.conf
-  # - name: e2term-rtg
-  #   mountPath: /opt/e2/dockerRouter.txt
-  #   subPath: routes.rtg
+  - name: e2term-rtg
+    mountPath: /opt/e2/dockerRouter.txt
+    subPath: routes.rtg
 
 volumes:
   - name: e2term-config
