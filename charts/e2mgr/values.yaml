@@ -21,9 +21,9 @@ env:
   DBAAS_SERVICE_HOST: dbaas-service
 
 volumeMounts:
-  - name: e2mgr-rtg
-    mountPath: /opt/E2Manager/router.txt
-    subPath: routes.rtg
+  # - name: e2mgr-rtg
+  #   mountPath: /opt/E2Manager/router.txt
+  #   subPath: routes.rtg
   - name: e2mgr-config
     mountPath: /opt/E2Manager/resources/configuration.yaml
     subPath: e2mgr.yaml
