@@ -12,9 +12,9 @@ service:
 env:
   PYTHONUNBUFFERED: "0"
   PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: "python"
-  RMR_SEED_RT: "/opt/ric/config/uta-rtg.rt"
-  RMR_SRC_ID: "10.0.2.20"
-  RMR_RTG_SVC: "" # leave empty, so RMR works correctly with RT Manager Simulator
+  #RMR_SEED_RT: "/opt/ric/config/uta-rtg.rt"
+  RMR_SRC_ID: "xapp-service"
+  RMR_RTG_SVC: "4561" # leave empty, so RMR works correctly with RT Manager Simulator
 
 volumeMounts:
   - name: xapp-rtg
