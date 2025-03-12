@@ -34,9 +34,6 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
           volumeMounts:
-            - name: routes-rtg
-              mountPath: /opt/ric/config/router.txt
-              subPath: routes.rtg
             - name: appmgr-config
               mountPath: /opt/ric/config/appmgr.yaml
               subPath: appmgr.yaml
@@ -45,9 +42,6 @@ spec:
 
       # Volumes must be defined at the same level as 'containers'
       volumes:
-        - name: routes-rtg
-          configMap:
-            name: routes-rtg
         - name: appmgr-config
           configMap:
             name: appmgr-config
