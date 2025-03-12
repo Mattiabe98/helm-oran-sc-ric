@@ -15,8 +15,9 @@ env:
   HOST_NAME: "e2mgr-service"
   POD_NAME: "e2mgr_pod"
   SERVICE_NAME: "ric_e2mgr_service"
-  RMR_SEED_RT: "/opt/E2Manager/router.txt"
+  #RMR_SEED_RT: "/opt/E2Manager/router.txt"
   RMR_SRC_ID: "e2mgr-service"
+  RMR_RTG_SVC: 4561
   DBAAS_SERVICE_HOST: dbaas-service
 
 volumeMounts:
