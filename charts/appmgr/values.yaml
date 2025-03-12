@@ -21,17 +21,11 @@ service:
   rmrDataPort: 4561
 
 volumeMounts:
-  # - name: routes-rtg
-  #   mountPath: /opt/ric/config/router.txt
-  #   subPath: routes.rtg
   - name: appmgr-config
     mountPath: /opt/ric/config/appmgr.yaml
     subPath: appmgr.yaml
 
 volumes:
-  - name: routes-rtg
-    configMap:
-      name: routes-rtg
   - name: appmgr-config
     configMap:
       name: appmgr-config
