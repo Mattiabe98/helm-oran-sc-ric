@@ -20,20 +20,20 @@ env:
   RMR_RTG_SVC: 4561
   DBAAS_SERVICE_HOST: dbaas-service
 
-# volumeMounts:
+volumeMounts:
   # - name: e2mgr-rtg
   #   mountPath: /opt/E2Manager/router.txt
   #   subPath: routes.rtg
-  # - name: e2mgr-config
-  #   mountPath: /opt/E2Manager/resources/configuration.yaml
-  #   subPath: e2mgr.yaml
+  - name: e2mgr-config
+    mountPath: /opt/E2Manager/resources/configuration.yaml
+    subPath: e2mgr.yaml
 
 volumes:
-  - name: e2mgr-rtg
-    configMap:
-      name: e2mgr-rtg
-  # - name: e2mgr-config
+  # - name: e2mgr-rtg
   #   configMap:
-  #     name: e2mgr-config
+  #     name: e2mgr-rtg
+  - name: e2mgr-config
+    configMap:
+      name: e2mgr-config
 
 resources: {}
