@@ -21,7 +21,7 @@ volumeMounts:
   #   mountPath: /opt/ric/config/uta-rtg.rt
   #   subPath: routes.rtg
   - name: script-volume
-    mountPath: /opt/xApps/
+    mountPath: /opt/xApps/files/
 
 volumes:
   - name: xapp-rtg
