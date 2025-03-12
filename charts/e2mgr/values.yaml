@@ -5,11 +5,6 @@ image:
   pullPolicy: IfNotPresent
   tag: "6.0.4" # Or use .Values.global.tag
 
-service:
-  type: ClusterIP
-  port: 3800
-
-
 env:
   CONTAINER_NAME: "e2mgr"
   HOST_NAME: "e2mgr-service"
