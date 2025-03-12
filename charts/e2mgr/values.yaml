@@ -17,16 +17,22 @@ env:
   SERVICE_NAME: "e2mgr-service"
   RMR_SRC_ID: "e2mgr-service"
   RMR_RTG_SVC: 4561
+  RMR_SEED_RT: "/opt/E2Manager/router.txt"
   DBAAS_SERVICE_HOST: dbaas-service
 
 volumeMounts:
+  - name: e2mgr-rtg
+    mountPath: /opt/E2Manager/router.txt
+    subPath: routes.rtg
   - name: e2mgr-config
     mountPath: /opt/E2Manager/resources/configuration.yaml
     subPath: e2mgr.yaml
 
 volumes:
+  - name: e2mgr-rtg
+    configMap:
+      name: e2mgr-rtg
   - name: e2mgr-config
     configMap:
       name: e2mgr-config
-
 resources: {}
