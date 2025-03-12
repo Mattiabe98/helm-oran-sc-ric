@@ -15,8 +15,9 @@ env:
   POD_NAME: "e2term_pod"
   SERVICE_NAME: "ric_e2term_service"
   print: "1"
-  RMR_SEED_RT: "/opt/e2/dockerRouter.txt"
-  RMR_SRC_ID: "10.0.2.10"
+  RMR_RTG_SVC: 4561
+  #RMR_SEED_RT: "/opt/e2/dockerRouter.txt"
+  RMR_SRC_ID: "e2term-service"
 
 volumeMounts:
   - name: e2term-config
