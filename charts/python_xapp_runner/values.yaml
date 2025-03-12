@@ -17,9 +17,9 @@ env:
   RMR_RTG_SVC: "4561" # leave empty, so RMR works correctly with RT Manager Simulator
 
 volumeMounts:
-  # - name: xapp-rtg
-  #   mountPath: /opt/ric/config/uta-rtg.rt
-  #   subPath: routes.rtg
+  - name: xapp-rtg
+    mountPath: /opt/ric/config/uta-rtg.rt
+    subPath: routes.rtg
   - name: script-volume
     mountPath: /opt/xApps/files/
 
