@@ -23,8 +23,8 @@ spec:
           command: [ "/bin/sh", "-c" ]
           args:
             - mkdir /tmp/xApp;
-              cp -R /opt/xApps/files/* /tmp/xApp/;
-              cp -R /opt/xApps/lib /tmp/xApp/;
+              cp -RL /opt/xApps/files/* /tmp/xApp/;
+              cp -RL /opt/xApps/lib /tmp/xApp/;
               sleep 1000;
           env:
             {{- range $key, $value := .Values.env }}
