@@ -24,7 +24,7 @@ spec:
           args:
             - mkdir /tmp/xApp;
               cp -R /opt/xApps/* /tmp/xApp/;
-              exec python3 -u /tmp/xApp/xapp.py;
+              #exec python3 -u /tmp/xApp/xapp.py;
               sleep 1000;
           env:
             {{- range $key, $value := .Values.env }}
