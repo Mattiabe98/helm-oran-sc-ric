@@ -22,8 +22,10 @@ spec:
             - containerPort: {{ .Values.service.port }}
           command: [ "/bin/sh", "-c" ]
           args:
-            - mv /opt/xApps/files/* /opt/xApps/;
-              exec python3 -u /opt/xApps/xapp.py;
+            - mkdir /tmp/xApp;
+              mv /opt/xApps/* /tmp/xApp;
+              exec python3 -u /tmp/xApp/xapp.py;
+              sleep 1000;
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
