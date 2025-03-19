@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: docker.io/boing7898/ric-plt-xapp-frame-py
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "test" # Or use .Values.global.tag
 
 service:
