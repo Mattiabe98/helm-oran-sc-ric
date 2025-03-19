@@ -61,7 +61,7 @@ class xAppBase(object):
 
         # Initialize subEndPoint with my IP and ports
         self.subEndPoint = self.subscriber.SubscriptionParamsClientEndpoint(self.xAPP_IP, self.MY_HTTP_SERVER_PORT, self.MY_RMR_PORT)
-        self.directives = self.subscriber.SubscriptionParamsE2SubscriptionDirectives(None, None, False)
+        self.directives = self.subscriber.SubscriptionParamsE2SubscriptionDirectives(2, 2, False)
         
         # Create a HTTP server and set the URI handler callbacks
         self.httpServer = ricrest.ThreadedHTTPServer(self.MY_HTTP_SERVER_ADDRESS, self.MY_HTTP_SERVER_PORT)
