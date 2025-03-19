@@ -14,5 +14,5 @@ data:
     trace=stop
     external-fqdn=e2t.com
     #put pointer to the key that point to pod name
-    pod_name=e2term-service
+    pod_name=POD_NAME
     sctp-port=36421
