@@ -28,9 +28,9 @@ volumeMounts:
   - name: rtmgrcfg
     mountPath: /cfg/rtmgr-config.yaml
     subPath: rtmgr-config.yaml
-  # - name: routes-rtg
-  #   mountPath: /opt/config/uta-rtg.rt
-  #   subPath: routes.rtg
+  - name: routes-rtg
+    mountPath: /opt/config/uta-rtg.rt
+    subPath: routes.rtg
 
 servicename:
   appmgr:
