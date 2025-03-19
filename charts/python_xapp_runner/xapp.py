@@ -83,7 +83,7 @@ class MyXapp(xAppBase):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='My example xApp')
     parser.add_argument("--http_server_port", type=int, default=8090, help="HTTP server listen port")
-    parser.add_argument("--rmr_port", type=int, default=4560, help="RMR port")
+    parser.add_argument("--rmr_port", type=int, default=4561, help="RMR port")
     parser.add_argument("--e2_node_id", type=str, default='gnbd_999_070_00019b_1', help="E2 Node ID")
     parser.add_argument("--ran_func_id", type=int, default=2, help="RAN function ID")
     parser.add_argument("--kpm_report_style", type=int, default=4, help="KPM Report Style ID")
