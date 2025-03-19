@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: xapp-lib
+data:
+  # Loop through files in the lib/ directory and add them to the ConfigMap
+  {{- range $file := .Files.Glob "lib/*" }}
+  {{ $file.Name }}: |
+    {{ .Files.Get $file.Name | indent 4 }}
+  {{- end }}
