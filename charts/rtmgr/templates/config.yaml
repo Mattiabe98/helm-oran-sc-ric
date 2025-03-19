@@ -6,7 +6,7 @@ data:
   rtmgr-config.yaml: |
        "controls":
          "subscription":
-           "host": "submgr-service:8080" 
+           "host": "submgr-service:8088" 
        "PlatformComponents":
          -
            "name": "SUBMAN"
