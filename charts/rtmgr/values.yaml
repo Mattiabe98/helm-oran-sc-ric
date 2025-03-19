@@ -54,7 +54,7 @@ serviceport:
   submgr:
     http: 3800
     rmr:
-      data: 8088
+      data: 4560
       route: 4561
   rtmgr:
     http: 3800
