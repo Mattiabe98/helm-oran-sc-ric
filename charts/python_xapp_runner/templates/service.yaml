@@ -8,9 +8,13 @@ spec:
   type: ClusterIP
   clusterIP: None
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}
+    - port: 4560
+      targetPort: 4560
       protocol: TCP
-      name: python-xapp-runner
+      name: rmr
+    - port: 8090
+      targetPort: 8090
+      protocol: TCP
+      name: http
   selector:
     app: python_xapp_runner
