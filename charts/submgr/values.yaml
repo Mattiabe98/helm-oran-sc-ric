@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: nexus3.o-ran-sc.org:10002/o-ran-sc/ric-plt-submgr
+  repository: 10.22.17.152:5000/oran-ric/ric-plt-submgr
   pullPolicy: IfNotPresent
   tag: "0.10.1"  # Or use .Values.global.tag
 
