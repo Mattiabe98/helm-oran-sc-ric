@@ -5,7 +5,7 @@ metadata:
 data:
   submgr-config.yaml: |
     "local":
-      "host": "submgr-service:8088"
+      "host": ":8088"
     "logger":
       "level": 3
     "rmr":
