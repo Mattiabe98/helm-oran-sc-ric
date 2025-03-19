@@ -9,10 +9,10 @@ data:
     volume=log
     #the key name of the environment holds the local ip address
     #ip address of the E2T in the RMR
-    local-ip=e2term-service
+    local-ip=@LOCAL_IP@
     #trace is start, stop
     trace=stop
     external-fqdn=e2t.com
     #put pointer to the key that point to pod name
-    pod_name=POD_NAME
+    pod_name=e2term-service
     sctp-port=36421
