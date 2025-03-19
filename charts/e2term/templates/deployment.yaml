@@ -26,10 +26,8 @@ spec:
             - containerPort: {{ .Values.service.port }}
           command: ["/bin/sh", "-c"]
           args:
-            - LOCAL_IP=$(hostname -I);
-              sed -e s/@LOCAL_IP@/$LOCAL_IP/g
-                  /tmp/config.conf | tee /opt/e2/config/config.conf;
-              cat /opt/e2/config/config.conf;
+            - export LOCAL_IP=$(hostname -I) && \
+              sed "s|@LOCAL_IP@|$LOCAL_IP|g" /tmp/config.conf > /opt/e2/config/config.conf;
               ./e2 -p config -f config.conf;
           env:
             {{- range $key, $value := .Values.env }}
