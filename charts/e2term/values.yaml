@@ -12,7 +12,7 @@ service:
 env:
   CONTAINER_NAME: "ric_e2term"
   HOST_NAME: "ric_e2term_host"
-  POD_NAME: "e2term_pod"
+  POD_NAME: "e2term"
   SERVICE_NAME: "ric_e2term_service"
   print: "1"
   sctp: 36421
