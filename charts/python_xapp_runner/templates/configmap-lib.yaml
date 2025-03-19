@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-lib-configmap
 data:
-  {{- range $path, $content := .Files.Glob "lib/*" }}
-  {{ $path | base }}: |
-    {{ $content | indent 4 }}
-  {{- end }}
+  {{- range $path, $_ :=  .Files.Glob  "lib/*" }}    
+    {{ $path | trimPrefix "lib/" }}: |- 
+  {{ $.Files.Get $path | indent 4 }}
+    {{ end }}
