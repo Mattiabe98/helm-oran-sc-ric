@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-lib-configmap
+  name: xapp-lib
 data:
-  {{- range $path, $_ :=  .Files.Glob  "lib/*" }}    
-    {{ $path | trimPrefix "lib/" }}: |- 
-  {{ $.Files.Get $path | indent 4 }}
-    {{ end }}
+  {{- range $path, $_ := .Files.Glob "lib/*" }}
+  {{ $path | trimPrefix "lib/" }}: |-
+    {{ $.Files.Get $path | indent 4 }}
+  {{- end }}
