@@ -22,8 +22,6 @@ volumeMounts:
     subPath: routes.rtg
   - name: script-volume
     mountPath: /opt/xApps/files/
-  - name: lib-volume
-    mountPath: /opt/xApps/lib
 
 volumes:
   - name: xapp-rtg
@@ -32,8 +30,4 @@ volumes:
   - name: script-volume
     configMap:
       name: xapp-script
-  - name: lib-volume
-    configMap:
-      name: xapp-lib
-
 resources: {}
