@@ -23,7 +23,7 @@ env:
 
 volumeMounts:
   - name: e2term-config
-    mountPath: /opt/e2/config/config.conf
+    mountPath: /tmp/config.conf
     subPath: e2term.conf
   - name: e2term-rtg
     mountPath: /opt/e2/dockerRouter.txt
