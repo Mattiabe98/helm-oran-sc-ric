@@ -29,7 +29,7 @@ class xAppBase(object):
         self.MY_HTTP_SERVER_ADDRESS = "0.0.0.0"     # bind to all interfaces
         self.MY_HTTP_SERVER_PORT = http_server_port # web server listen port
         self.MY_RMR_PORT = rmr_port
-        self.SUB_MGR_URI = "http://10.0.2.13:8088/ric/v1"
+        self.SUB_MGR_URI = "http://submgr-service:8088/ric/v1"
         self.xapp_thread = None
 
         if config is not None:
