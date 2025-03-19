@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: docker.io/boing7898/ric-plt-xapp-frame-py
   pullPolicy: IfNotPresent
-  tag: "latest" # Or use .Values.global.tag
+  tag: "test" # Or use .Values.global.tag
 
 service:
   type: ClusterIP
