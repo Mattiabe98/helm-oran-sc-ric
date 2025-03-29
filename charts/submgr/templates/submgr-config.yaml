@@ -13,8 +13,8 @@ data:
       "maxSize": 8192
       "numWorkers": 1
     "rtmgr":
-      "hostAddr": "rtmgr-service"
-      "port"    : "3800"
+      "hostAddr": "rtmgr-sim-service"
+      "port"    : "12020"
       "baseUrl" : "/ric/v1"
     "db":
       "sessionNamespace": "XMSession"
