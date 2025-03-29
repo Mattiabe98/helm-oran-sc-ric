@@ -12,7 +12,7 @@ data:
       port: 3801
       maxMsgSize: 65536
     routingManager:
-      baseUrl: http://rtmgr-service:3800/ric/v1/handles/
+      baseUrl: http://rtmgr-sim-service:12020/ric/v1/handles/
     notificationResponseBuffer: 100
     bigRedButtonTimeoutSec: 5
     maxRnibConnectionAttempts: 3
