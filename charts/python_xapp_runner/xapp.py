@@ -100,7 +100,7 @@ if __name__ == '__main__':
     parser.add_argument("--config", type=str, default='', help="xApp config file path")
     parser.add_argument("--http_server_port", type=int, default=8090, help="HTTP server listen port")
     parser.add_argument("--rmr_port", type=int, default=4560, help="RMR port")
-    parser.add_argument("--e2_node_id", type=str, default='gnbd_999_070_00019b_1', help="E2 Node ID")
+    parser.add_argument("--e2_node_id", type=str, default='gnbd_001_001_00019b_1', help="E2 Node ID")
     parser.add_argument("--ran_func_id", type=int, default=2, help="RAN function ID")
     parser.add_argument("--kpm_report_style", type=int, default=1, help="xApp config file path")
     parser.add_argument("--ue_ids", type=str, default='0', help="UE ID")
