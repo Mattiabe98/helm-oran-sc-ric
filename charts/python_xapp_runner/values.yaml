@@ -5,10 +5,6 @@ image:
   pullPolicy: Always
   tag: "test" # Or use .Values.global.tag
 
-start:
-  perf: true
-  turbostat: true
-
 service:
   type: ClusterIP
   port: 8080 # Or any port the xapp runner exposes
@@ -19,6 +15,8 @@ env:
   RMR_SEED_RT: "/opt/ric/config/uta-rtg.rt"
   RMR_SRC_ID: "xapp-service"
   RMR_RTG_SVC: "4561" # leave empty, so RMR works correctly with RT Manager Simulator
+  START_PERF: true
+  START_TURBOSTAT: true
 
 volumeMounts:
   - name: xapp-rtg
