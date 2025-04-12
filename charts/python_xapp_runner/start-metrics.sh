@@ -2,7 +2,7 @@
 
 # Start xapp.py first
 echo "Starting xapp.py..."
-exec python3 -u /tmp/xApp/xapp.py &
+python3 -u /tmp/xApp/xapp.py &
 XAPP_PID=$!
 
 # Wait a moment to ensure xapp.py is fully started
