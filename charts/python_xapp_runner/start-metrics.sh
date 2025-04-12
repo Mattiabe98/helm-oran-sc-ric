@@ -26,6 +26,15 @@ if [[ -n "$START_PERF" && "$START_PERF" == "true" ]]; then
     PERF_PID=$!
 fi
 
+# Check if the environment variable to start turbostat is set
+if [[ -n "$START_TURBOSTAT" && "$START_TURBOSTAT" == "true" ]]; then
+    echo "Starting turbostat monitoring..."
+
+    # Start turbostat in the background (write output to a file)
+    turbostat --summary --interval 1 > /mnt/data/turbostat_output.txt &
+    TURBOSTAT_PID=$!
+fi
+
 # Wait until the gnb process ends, if it's being monitored
 if [[ -n "$PERF_PID" ]]; then
     echo "Waiting for gnb process (PID: $GNB_PID) to finish..."
@@ -34,15 +43,17 @@ if [[ -n "$PERF_PID" ]]; then
     # Wait for the perf process to finish recording
     echo "gnb process finished, stopping perf."
     wait $PERF_PID;
-    
-    # Send a graceful SIGTERM to xapp.py to stop it when gnb finishes
-    echo "gnb process has finished. Sending SIGTERM to xapp.py (PID: $XAPP_PID)..."
-    kill -TERM $XAPP_PID;
-else
-    # If no perf was run, just wait for xapp to finish
-    echo "No perf monitoring. Waiting for xapp.py to finish..."
-    wait $XAPP_PID;
 fi
+
+# Wait for the turbostat process to finish, if it's running
+if [[ -n "$TURBOSTAT_PID" ]]; then
+    echo "Stopping turbostat."
+    wait $TURBOSTAT_PID;
+fi
+
+# Send a graceful SIGTERM to xapp.py to stop it when gnb finishes
+echo "gnb process has finished. Sending SIGTERM to xapp.py (PID: $XAPP_PID)..."
+kill -TERM $XAPP_PID;
 
 # End of script
 echo "All processes have finished."
