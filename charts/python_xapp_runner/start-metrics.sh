@@ -17,6 +17,7 @@ if [[ -n "$START_PERF" && "$START_PERF" == "true" ]]; then
 
     if [ -z "$GNB_PID" ]; then
         echo "gnb process not found. Exiting.";
+        sleep 10000;
         exit 1;
     fi;
 
