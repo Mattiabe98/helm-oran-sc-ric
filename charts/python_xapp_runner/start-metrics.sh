@@ -22,7 +22,7 @@ if [[ -n "$START_PERF" && "$START_PERF" == "true" ]]; then
 
     # Start perf monitoring attached to the gnb PID in the background
     echo "Starting perf monitoring for gnb process (PID: $GNB_PID)..."
-    perf record -e cycles,instructions,cache-misses -F 1000 -g -p $GNB_PID &
+    perf record -e cycles,instructions,cache-misses -F 1000 -g -p $GNB_PID -o /mnt/data/perf.data &
     PERF_PID=$!
 fi
 
