@@ -1,9 +1,5 @@
 #!/bin/bash
 
-mkdir /tmp/xApp
-cp -RL /opt/xApps/files/* /tmp/xApp/
-cp -RL /opt/xApps/lib /tmp/xApp/
-
 # Start xapp.py first
 echo "Starting xapp.py..."
 exec python3 -u /tmp/xApp/xapp.py &
