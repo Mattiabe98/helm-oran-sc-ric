@@ -22,6 +22,8 @@ volumeMounts:
     subPath: routes.rtg
   - name: script-volume
     mountPath: /opt/xApps/files/
+  - mountPath: /mnt/data  # Mount path inside the container
+    name: storage
 
 volumes:
   - name: xapp-rtg
@@ -30,4 +32,7 @@ volumes:
   - name: script-volume
     configMap:
       name: xapp-script
+  - name: storage
+    persistentVolumeClaim:
+      claimName: local-pvc  # This should match your PVC name
 resources: {}
