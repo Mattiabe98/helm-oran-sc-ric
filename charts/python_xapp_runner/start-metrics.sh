@@ -32,7 +32,7 @@ if [[ -n "$START_TURBOSTAT" && "$START_TURBOSTAT" == "true" ]]; then
     echo "Starting turbostat monitoring..."
 
     # Start turbostat in the background (write output to a file)
-    turbostat --summary --interval 1 > /mnt/data/turbostat_output.txt &
+    turbostat --Summary --interval 1 -o /mnt/data/turbostat_output.txt &
     TURBOSTAT_PID=$!
 fi
 
