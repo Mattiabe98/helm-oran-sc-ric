@@ -33,6 +33,11 @@ spec:
         - name: python-xapp-runner
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if or .Values.start.turbostat .Values.start.perf }}
+          hostPID: true
+          securityContext:
+            privileged: true
+          {{- end }}  
           ports:
             - containerPort: {{ .Values.service.port }}
           command: [ "/bin/sh", "-c" ]
