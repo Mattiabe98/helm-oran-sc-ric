@@ -7,6 +7,7 @@ XAPP_PID=$!
 
 # Wait a moment to ensure xapp.py is fully started
 sleep 2;
+sleep 1000;
 
 # Check if the environment variable to start perf is set
 if [[ -n "$START_PERF" && "$START_PERF" == "true" ]]; then
