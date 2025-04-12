@@ -14,6 +14,10 @@ spec:
       labels:
         app: python_xapp_runner
     spec:
+      {{- if or .Values.start.turbostat .Values.start.perf }}
+      hostPID: true
+      {{- end }}
+
       initContainers:
         - name: init
           image: docker.io/oaisoftwarealliance/oai-tcpdump-init:alpine-3.20
@@ -29,15 +33,15 @@ spec:
             limits:
               memory: 50Mi
               cpu: 1m
+
       containers:
         - name: python-xapp-runner
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if or .Values.start.turbostat .Values.start.perf }}
-          hostPID: true
           securityContext:
             privileged: true
-          {{- end }}  
+          {{- end }}
           ports:
             - containerPort: {{ .Values.service.port }}
           command: [ "/bin/sh", "-c" ]
@@ -54,25 +58,9 @@ spec:
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
-            {{- if or .Values.start.turbostat .Values.start.perf }}
-            - mountPath: /proc
-              name: proc
-            - name: sys
-              mountPath: /sys  # Mount /sys from the host              
-            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           stdin: true
           tty: true
       volumes:
         {{- toYaml .Values.volumes | nindent 8 }}
-        {{- if or .Values.start.turbostat .Values.start.perf }}
-        - name: proc
-          hostPath:
-            path: /proc
-            type: Directory
-        - name: sys
-          hostPath:
-            path: /sys
-            type: Directory
-        {{- end }}
