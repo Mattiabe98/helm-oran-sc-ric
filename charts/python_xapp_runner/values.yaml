@@ -5,6 +5,10 @@ image:
   pullPolicy: Always
   tag: "test" # Or use .Values.global.tag
 
+start:
+  perf: true
+  turbostat: true
+
 service:
   type: ClusterIP
   port: 8080 # Or any port the xapp runner exposes
