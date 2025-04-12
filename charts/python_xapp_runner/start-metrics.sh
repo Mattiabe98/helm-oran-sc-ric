@@ -13,7 +13,7 @@ if [[ -n "$START_PERF" && "$START_PERF" == "true" ]]; then
     echo "Starting perf monitoring..."
 
     # Find the PID of the gnb process (replace with exact name if necessary)
-    GNB_PID=$(pgrep -f "gnb");
+    GNB_PID=$(ps aux | grep "[g]nb" | awk '{print $2}')
 
     if [ -z "$GNB_PID" ]; then
         echo "gnb process not found. Exiting.";
