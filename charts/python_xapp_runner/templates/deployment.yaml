@@ -14,8 +14,10 @@ spec:
       labels:
         app: python_xapp_runner
     spec:
+      # --- Pod Level Settings ---
       {{- if or .Values.start.turbostat .Values.start.perf }}
-      hostPID: true
+      # <<<=== hostPID belongs here, under spec.template.spec
+      hostPID: false
       {{- end }}
 
       initContainers:
@@ -38,7 +40,9 @@ spec:
         - name: python-xapp-runner
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # --- Container Level Settings ---
           {{- if or .Values.start.turbostat .Values.start.perf }}
+          # <<<=== securityContext is correctly placed here for container-specific settings
           securityContext:
             privileged: true
           {{- end }}
@@ -58,9 +62,29 @@ spec:
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
+            {{- if or .Values.start.turbostat .Values.start.perf }}
+            # <<<=== Volume mounts are container-specific, correctly placed here
+            - mountPath: /proc
+              name: proc
+            - name: sys
+              mountPath: /sys  # Mount /sys from the host
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           stdin: true
           tty: true
+
+      # --- Pod Level Settings ---
       volumes:
         {{- toYaml .Values.volumes | nindent 8 }}
+        {{- if or .Values.start.turbostat .Values.start.perf }}
+        # <<<=== Volume definitions are Pod-specific, correctly placed here
+        - name: proc
+          hostPath:
+            path: /proc
+            type: Directory
+        - name: sys
+          hostPath:
+            path: /sys
+            type: Directory
+        {{- end }}
