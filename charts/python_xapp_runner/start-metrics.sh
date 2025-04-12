@@ -39,17 +39,17 @@ fi
 # Wait until the gnb process ends, if it's being monitored
 if [[ -n "$PERF_PID" ]]; then
     echo "Waiting for gnb process (PID: $GNB_PID) to finish..."
-    wait $GNB_PID;
+    tail --pid=$GNB_PID -f /dev/null;
 
     # Wait for the perf process to finish recording
     echo "gnb process finished, stopping perf."
-    wait $PERF_PID;
+    tail --pid=$PERF_PID -f /dev/null;
 fi
 
 # Wait for the turbostat process to finish, if it's running
 if [[ -n "$TURBOSTAT_PID" ]]; then
     echo "Stopping turbostat."
-    wait $TURBOSTAT_PID;
+    tail --pid=$TURBOSTAT_PID -f /dev/null;
 fi
 
 # Send a graceful SIGTERM to xapp.py to stop it when gnb finishes
