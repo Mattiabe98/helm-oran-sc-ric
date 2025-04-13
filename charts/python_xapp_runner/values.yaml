@@ -1,9 +1,5 @@
 replicaCount: 1
 
-start:
-  turbostat: true
-  perf: true
-
 image:
   repository: docker.io/boing7898/ric-plt-xapp-frame-py
   pullPolicy: Always
