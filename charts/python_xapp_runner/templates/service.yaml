@@ -12,10 +12,10 @@ spec:
       targetPort: 4560
       protocol: TCP
       name: rmr
-    # - port: 4561
-    #   targetPort: 4561
-    #   protocol: TCP
-    #   name: rmr1
+    - port: 55555
+      targetPort: 55555
+      protocol: UDP
+      name: json
     - port: 8090
       targetPort: 8090
       protocol: TCP
