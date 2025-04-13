@@ -15,11 +15,6 @@ spec:
         app: python_xapp_runner
     spec:
       # --- Pod Level Settings ---
-      {{- if or .Values.start.turbostat .Values.start.perf }}
-      # <<<=== hostPID belongs here, under spec.template.spec
-      hostPID: false
-      {{- end }}
-
       initContainers:
         - name: init
           image: docker.io/oaisoftwarealliance/oai-tcpdump-init:alpine-3.20
@@ -41,11 +36,6 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # --- Container Level Settings ---
-          {{- if or .Values.start.turbostat .Values.start.perf }}
-          # <<<=== securityContext is correctly placed here for container-specific settings
-          securityContext:
-            privileged: true
-          {{- end }}
           ports:
             - containerPort: {{ .Values.service.port }}
           command: [ "/bin/sh", "-c" ]
