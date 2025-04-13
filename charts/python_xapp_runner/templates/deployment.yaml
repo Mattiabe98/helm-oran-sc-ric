@@ -64,10 +64,6 @@ spec:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
             {{- if or .Values.start.turbostat .Values.start.perf }}
             # <<<=== Volume mounts are container-specific, correctly placed here
-            - mountPath: /proc
-              name: proc
-            - name: sys
-              mountPath: /sys  # Mount /sys from the host
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -79,12 +75,4 @@ spec:
         {{- toYaml .Values.volumes | nindent 8 }}
         {{- if or .Values.start.turbostat .Values.start.perf }}
         # <<<=== Volume definitions are Pod-specific, correctly placed here
-        - name: proc
-          hostPath:
-            path: /proc
-            type: Directory
-        - name: sys
-          hostPath:
-            path: /sys
-            type: Directory
         {{- end }}
