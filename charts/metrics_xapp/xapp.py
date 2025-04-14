@@ -16,7 +16,7 @@ from http.client import RemoteDisconnected
 from queue import Queue
 from threading import Thread
 from time import sleep
-from typing import Any, Dict, Optional, Tuple, List
+from typing import Any, Dict, Optional, Tuple, List, Queue as TypingQueue
 
 from influxdb_client import InfluxDBClient, WriteApi
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -47,7 +47,7 @@ except ImportError:
 
 # --- Global Queue for metrics ---
 # Shared between UDP receiver, RIC callback, and InfluxDB pusher
-metrics_queue: Queue[Optional[Dict[str, Any]]] = Queue()
+metrics_queue: TypingQueue[Optional[Dict[str, Any]]] = Queue()
 
 # --- xApp Class Definition (Modified for Integration) ---
 class IntegratedXapp(xAppBase):
@@ -152,7 +152,7 @@ class IntegratedXapp(xAppBase):
 
     # Mark the function as xApp start function using xAppBase.start_function decorator.
     @xAppBase.start_function
-    def start(self, e2_node_id, kpm_report_style, ue_ids, metric_names):
+    def start(self, e2_node_id, kpm_report_style, ue_ids: List[int], metric_names: List[str]):
         """Starts the xApp logic, primarily setting up subscriptions."""
         report_period = 1000  # ms - TODO: Make configurable?
         granul_period = 1000  # ms - TODO: Make configurable?
