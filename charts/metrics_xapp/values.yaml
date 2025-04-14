@@ -18,6 +18,12 @@ env:
   RMR_RTG_SVC: "4561" # leave empty, so RMR works correctly with RT Manager Simulator
   START_PERF: true
   START_TURBOSTAT: true
+  PORT: 55555
+  BUCKET: srsran
+  TESTBED: default
+  URL: http://influxdb2.srs5g.svc.cluster.local:8086
+  ORG: srs
+  TOKEN: "605bc59413b7d5457d181ccf20f9fda15693f81b068d70396cc183081b264f3b"  
 
 volumeMounts:
   - name: xapp-rtg
