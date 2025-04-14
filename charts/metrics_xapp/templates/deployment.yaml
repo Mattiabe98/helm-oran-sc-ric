@@ -15,6 +15,7 @@ spec:
         app: metrics-app
     spec:
       # --- Pod Level Settings ---
+      {{ if .Values.waitgnb }} 
       initContainers:
         - name: init
           image: docker.io/oaisoftwarealliance/oai-tcpdump-init:alpine-3.20
