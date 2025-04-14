@@ -52,9 +52,6 @@ spec:
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
-            {{- if or .Values.start.turbostat .Values.start.perf }}
-            # <<<=== Volume mounts are container-specific, correctly placed here
-            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           stdin: true
@@ -63,6 +60,3 @@ spec:
       # --- Pod Level Settings ---
       volumes:
         {{- toYaml .Values.volumes | nindent 8 }}
-        {{- if or .Values.start.turbostat .Values.start.perf }}
-        # <<<=== Volume definitions are Pod-specific, correctly placed here
-        {{- end }}
