@@ -77,7 +77,7 @@ class IntegratedXapp(xAppBase):
             # Use colletStartTime if available, otherwise use current time
             timestamp_unix = hdr_info.get('colletStartTime', datetime.now(timezone.utc).timestamp())
             # Ensure timestamp is timezone-aware timezone.utc for InfluxDB
-            timestamp_iso = datetime.fromtimestamp(timestamp_unix, tz=timezone.timezone.utc).isoformat()
+            timestamp_iso = datetime.fromtimestamp(timestamp_unix, tz=timezone.utc).isoformat()
 
             granulPeriod = meas_data.get("granulPeriod")
 
