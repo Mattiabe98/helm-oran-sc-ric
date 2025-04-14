@@ -119,7 +119,7 @@ class IntegratedXapp(xAppBase):
                     else:
                         # Log unsupported types within the fields
                         logging.warning(f"Unsupported type '{type(value)}' for metric {metric_name}. Skipping.")
-                return flatten_measurement_fields
+                return flattened
         
             if kpm_report_style in [1, 2]:
                 # Style 1: Cell level metrics
