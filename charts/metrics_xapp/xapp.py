@@ -11,7 +11,7 @@ import logging
 import signal
 import socket
 from contextlib import suppress
-from datetime import datetime, UTC, timezone
+from datetime import datetime, timezone
 from http.client import RemoteDisconnected
 from queue import Queue
 from threading import Thread
@@ -35,7 +35,7 @@ except ImportError:
         def signal_handler(self, *args, **kwargs): pass
         class DummyE2SM:
             def set_ran_func_id(self, *args, **kwargs): pass
-            def extract_hdr_info(self, hdr): return {'colletStartTime': datetime.now(UTC).timestamp()} # Dummy data
+            def extract_hdr_info(self, hdr): return {'colletStartTime': datetime.now(timezone.utc).timestamp()} # Dummy data
             def extract_meas_data(self, msg): return {'measData': {'dummyMetric': 123.0}} # Dummy data
             def subscribe_report_service_style_1(self, *args, **kwargs): pass
             def subscribe_report_service_style_2(self, *args, **kwargs): pass
@@ -75,9 +75,9 @@ class IntegratedXapp(xAppBase):
             meas_data = self.e2sm_kpm.extract_meas_data(indication_msg)
 
             # Use colletStartTime if available, otherwise use current time
-            timestamp_unix = hdr_info.get('colletStartTime', datetime.now(UTC).timestamp())
-            # Ensure timestamp is timezone-aware UTC for InfluxDB
-            timestamp_iso = datetime.fromtimestamp(timestamp_unix, tz=timezone.utc).isoformat()
+            timestamp_unix = hdr_info.get('colletStartTime', datetime.now(timezone.utc).timestamp())
+            # Ensure timestamp is timezone-aware timezone.utc for InfluxDB
+            timestamp_iso = datetime.fromtimestamp(timestamp_unix, tz=timezone.timezone.utc).isoformat()
 
             granulPeriod = meas_data.get("granulPeriod")
 
@@ -324,7 +324,7 @@ def _publish_data(
             if source == "srsran":
                 # --- Process srsRAN UDP Metrics ---
                 if "ue_list" in metric:
-                    timestamp = datetime.fromtimestamp(metric["timestamp"], UTC).isoformat()
+                    timestamp = datetime.fromtimestamp(metric["timestamp"], timezone.utc).isoformat()
                     for ue_info in metric["ue_list"]:
                         ue_container = ue_info.get("ue_container", {})
                         rnti = ue_container.pop("rnti", None)
@@ -349,7 +349,7 @@ def _publish_data(
                     logging.debug(f"Pushed srsran_ue_info metric batch ({len(metric['ue_list'])} UEs)")
 
                 elif "app_resource_usage" in metric:
-                    timestamp = datetime.fromtimestamp(metric["timestamp"], UTC).isoformat()
+                    timestamp = datetime.fromtimestamp(metric["timestamp"], timezone.utc).isoformat()
                     fields = metric.get("app_resource_usage", {})
                     if fields:
                         _influx_push(
@@ -365,7 +365,7 @@ def _publish_data(
                         logging.debug("Pushed srsran_app_resource_usage metric")
 
                 elif "ru" in metric and "ofh_cells" in metric["ru"] and metric["ru"]["ofh_cells"]:
-                    timestamp = datetime.fromtimestamp(metric["timestamp"], UTC).isoformat()
+                    timestamp = datetime.fromtimestamp(metric["timestamp"], timezone.utc).isoformat()
                     for cell in metric["ru"]["ofh_cells"]:
                         cell_data = cell.get("cell", {})
                         ul_data = cell_data.get("ul", {})
