@@ -49,6 +49,8 @@ except ImportError:
 # Shared between UDP receiver, RIC callback, and InfluxDB pusher
 metrics_queue: Queue = Queue()
 
+
+
 # --- xApp Class Definition (Modified for Integration) ---
 class IntegratedXapp(xAppBase):
     def __init__(self, config, http_server_port, rmr_port, influx_bucket, influx_testbed):
@@ -57,6 +59,30 @@ class IntegratedXapp(xAppBase):
         self.influx_testbed = influx_testbed
         logging.info("IntegratedXapp initialized.")
 
+    def flatten_measurement_fields(data_dict):
+    flattened = {}
+    for metric_name, value in data_dict.items():
+        if isinstance(value, list):
+            if value:  # Check if list is not empty
+                # Take the first element
+                scalar_value = value[0]
+                # Ensure it's a suitable type (float/int)
+                if isinstance(scalar_value, (int, float)):
+                    flattened[metric_name] = scalar_value
+                    logging.debug(f"Flattened list for {metric_name}: {value} -> {scalar_value}")
+                else:
+                    logging.warning(f"First element of list for metric {metric_name} is not int/float ({type(scalar_value)}). Skipping.")
+            else:
+                # Handle empty list - skipping is usually safest
+                logging.warning(f"Metric {metric_name} has an empty list value. Skipping.")
+        elif isinstance(value, (int, float, str, bool)):
+            # Keep existing scalar values
+            flattened[metric_name] = value
+        else:
+            # Log unsupported types within the fields
+            logging.warning(f"Unsupported type '{type(value)}' for metric {metric_name}. Skipping.")
+    return flatten_measurement_fields
+    
     def ric_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id_from_sub=None):
         """
         Callback triggered by xAppBase upon receiving RIC Indication.
@@ -95,8 +121,11 @@ class IntegratedXapp(xAppBase):
             if kpm_report_style in [1, 2]:
                 # Style 1: Cell level metrics
                 # Style 2: Single UE metrics (UE ID passed during subscription)
-                fields = convert_integers_to_floats(meas_data.get("measData", {}))
-                if not fields:
+                raw_meas_data = meas_data.get("measData", {})
+                flattened_fields = flatten_measurement_fields(raw_meas_data) # Call the flatten function
+                final_fields = convert_integers_to_floats(flattened_fields) # Convert int to float AFTER flattening
+                
+                if not final_fields:
                     logging.warning(f"{log_prefix}: No measurement data found in measData.")
                     return
 
@@ -104,7 +133,7 @@ class IntegratedXapp(xAppBase):
                     "source": "ric", # Identifier for the pusher thread
                     "measurement": f"ric_kpm_style{kpm_report_style}",
                     "tags": common_tags.copy(),
-                    "fields": fields,
+                    "fields": final_fields,
                     "time": timestamp_iso,
                 }
                 # Add UE ID tag specifically for style 2
@@ -124,8 +153,10 @@ class IntegratedXapp(xAppBase):
                      return
 
                 for ue_id, ue_meas_data in ue_meas_dict.items():
-                    fields = convert_integers_to_floats(ue_meas_data.get("measData", {}))
-                    if not fields:
+                    raw_ue_meas_data = ue_meas_data.get("measData", {})
+                    flattened_ue_fields = flatten_measurement_fields(raw_ue_meas_data) # Call the flatten function
+                    final_ue_fields = convert_integers_to_floats(flattened_ue_fields) # Convert int to float AFTER flattening
+                    if not final_ue_fields:
                         logging.warning(f"{log_prefix}: No measurement data for UE {ue_id}.")
                         continue
 
@@ -136,7 +167,7 @@ class IntegratedXapp(xAppBase):
                         "source": "ric", # Identifier for the pusher thread
                         "measurement": f"ric_kpm_style{kpm_report_style}_ue",
                         "tags": common_tags.copy(),
-                        "fields": fields,
+                        "fields": final_ue_fields,
                         "time": timestamp_iso,
                     }
                     record["tags"]["ue_id"] = str(ue_id)
