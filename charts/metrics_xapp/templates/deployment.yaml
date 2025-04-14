@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  labels:
+    app: python_xapp_runner
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: python_xapp_runner
+  template:
+    metadata:
+      labels:
+        app: python_xapp_runner
+    spec:
+      # --- Pod Level Settings ---
+      initContainers:
+        - name: init
+          image: docker.io/oaisoftwarealliance/oai-tcpdump-init:alpine-3.20
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - until ncat -zvu srsran-5g-gtpu 2152; do echo "waiting for gNB to start"; sleep 1; done
+          resources:
+            requests:
+              memory: 50Mi
+              cpu: 1m
+            limits:
+              memory: 50Mi
+              cpu: 1m
+
+      containers:
+        - name: python-xapp-runner
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # --- Container Level Settings ---
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - mkdir /tmp/xApp;
+              cp -RL /opt/xApps/files/* /tmp/xApp/;
+              cp -RL /opt/xApps/lib /tmp/xApp/;
+              chmod +x /tmp/xApp/start-metrics.sh;
+              exec /tmp/xApp/start-metrics.sh;
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $value }}"
+            {{- end }}
+          volumeMounts:
+            {{- toYaml .Values.volumeMounts | nindent 12 }}
+            {{- if or .Values.start.turbostat .Values.start.perf }}
+            # <<<=== Volume mounts are container-specific, correctly placed here
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          stdin: true
+          tty: true
+
+      # --- Pod Level Settings ---
+      volumes:
+        {{- toYaml .Values.volumes | nindent 8 }}
+        {{- if or .Values.start.turbostat .Values.start.perf }}
+        # <<<=== Volume definitions are Pod-specific, correctly placed here
+        {{- end }}
