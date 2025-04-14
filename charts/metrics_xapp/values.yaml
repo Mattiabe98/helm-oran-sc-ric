@@ -1,4 +1,5 @@
 replicaCount: 1
+waitgnb: false
 
 image:
   repository: docker.io/boing7898/ric-plt-xapp-frame-py
