@@ -501,21 +501,21 @@ def _parse_args() -> Tuple[Optional[InfluxDBClient], str, str, bool, int, int, i
         description="Receives srsRAN UDP metrics and RIC E2 metrics, pushing both to InfluxDB."
     )
     # srsRAN Listener Args
-    parser.add_argument("--udp-port", type=int, default='55555', required=True, help="UDP Port to listen for srsRAN metrics.")
+    parser.add_argument("--udp-port", type=int, default='55555', required=False, help="UDP Port to listen for srsRAN metrics.")
 
     # InfluxDB Args
     parser.add_argument(
         "--db-config",
         nargs="*",
-        required=True,
+        required=False,
         default='url=http://influxdb2.srs5g.svc.cluster.local:8086 token=605bc59413b7d5457d181ccf20f9fda15693f81b068d70396cc183081b264f3b org=srs',
         help='InfluxDB configuration as "key=value" pairs (e.g., url=http://localhost:8086 token=mytoken org=myorg). Required: url, token, org.',
     )
-    parser.add_argument("--bucket", required=True, default='srsran', help="InfluxDB Bucket to save data.")
+    parser.add_argument("--bucket", required=False, default='srsran', help="InfluxDB Bucket to save data.")
     parser.add_argument(
         "--clean-bucket", action="store_true", help="Delete and recreate the InfluxDB bucket before starting."
     )
-    parser.add_argument("--testbed", required=True, default='default', help="Identifier for the testbed environment (used as a tag).")
+    parser.add_argument("--testbed", required=False, default='default', help="Identifier for the testbed environment (used as a tag).")
 
     # RIC / xApp Args
     parser.add_argument("--xapp-config", type=str, default='', help="xApp config file path (passed to xAppBase).")
