@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-deployment
   labels:
-    app: python_xapp_runner
+    app: metrics-app
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: python_xapp_runner
+      app: metrics-app
   template:
     metadata:
       labels:
-        app: python_xapp_runner
+        app: metrics-app
     spec:
       # --- Pod Level Settings ---
       initContainers:

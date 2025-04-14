@@ -1,6 +1,6 @@
 apiVersion: v2
-name: python_xapp_runner
-description: A Helm chart for the python_xapp_runner service
+name: metrics-app
+description: A Helm chart for the metrics-app service
 type: application
 version: 0.1.0
 appVersion: "1.0"
