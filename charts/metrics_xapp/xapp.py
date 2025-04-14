@@ -16,7 +16,7 @@ from http.client import RemoteDisconnected
 from queue import Queue
 from threading import Thread
 from time import sleep
-from typing import Any, Dict, Optional, Tuple, List, Queue as TypingQueue
+from typing import Any, Dict, Optional, Tuple, List
 
 from influxdb_client import InfluxDBClient, WriteApi
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -47,7 +47,7 @@ except ImportError:
 
 # --- Global Queue for metrics ---
 # Shared between UDP receiver, RIC callback, and InfluxDB pusher
-metrics_queue: TypingQueue[Optional[Dict[str, Any]]] = Queue()
+metrics_queue: Queue = Queue()
 
 # --- xApp Class Definition (Modified for Integration) ---
 class IntegratedXapp(xAppBase):
