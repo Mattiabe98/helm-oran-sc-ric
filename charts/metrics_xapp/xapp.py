@@ -59,29 +59,7 @@ class IntegratedXapp(xAppBase):
         self.influx_testbed = influx_testbed
         logging.info("IntegratedXapp initialized.")
 
-    def flatten_measurement_fields(data_dict):
-        flattened = {}
-        for metric_name, value in data_dict.items():
-            if isinstance(value, list):
-                if value:  # Check if list is not empty
-                    # Take the first element
-                    scalar_value = value[0]
-                    # Ensure it's a suitable type (float/int)
-                    if isinstance(scalar_value, (int, float)):
-                        flattened[metric_name] = scalar_value
-                        logging.debug(f"Flattened list for {metric_name}: {value} -> {scalar_value}")
-                    else:
-                        logging.warning(f"First element of list for metric {metric_name} is not int/float ({type(scalar_value)}). Skipping.")
-                else:
-                    # Handle empty list - skipping is usually safest
-                    logging.warning(f"Metric {metric_name} has an empty list value. Skipping.")
-            elif isinstance(value, (int, float, str, bool)):
-                # Keep existing scalar values
-                flattened[metric_name] = value
-            else:
-                # Log unsupported types within the fields
-                logging.warning(f"Unsupported type '{type(value)}' for metric {metric_name}. Skipping.")
-        return flatten_measurement_fields
+
     
     def ric_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id_from_sub=None):
         """
@@ -118,6 +96,31 @@ class IntegratedXapp(xAppBase):
             if granulPeriod is not None:
                 common_tags["granularity_ms"] = granulPeriod
 
+
+            def flatten_measurement_fields(data_dict):
+                flattened = {}
+                for metric_name, value in data_dict.items():
+                    if isinstance(value, list):
+                        if value:  # Check if list is not empty
+                            # Take the first element
+                            scalar_value = value[0]
+                            # Ensure it's a suitable type (float/int)
+                            if isinstance(scalar_value, (int, float)):
+                                flattened[metric_name] = scalar_value
+                                logging.debug(f"Flattened list for {metric_name}: {value} -> {scalar_value}")
+                            else:
+                                logging.warning(f"First element of list for metric {metric_name} is not int/float ({type(scalar_value)}). Skipping.")
+                        else:
+                            # Handle empty list - skipping is usually safest
+                            logging.warning(f"Metric {metric_name} has an empty list value. Skipping.")
+                    elif isinstance(value, (int, float, str, bool)):
+                        # Keep existing scalar values
+                        flattened[metric_name] = value
+                    else:
+                        # Log unsupported types within the fields
+                        logging.warning(f"Unsupported type '{type(value)}' for metric {metric_name}. Skipping.")
+                return flatten_measurement_fields
+        
             if kpm_report_style in [1, 2]:
                 # Style 1: Cell level metrics
                 # Style 2: Single UE metrics (UE ID passed during subscription)
