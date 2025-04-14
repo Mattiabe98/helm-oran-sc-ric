@@ -74,11 +74,13 @@ class IntegratedXapp(xAppBase):
             hdr_info = self.e2sm_kpm.extract_hdr_info(indication_hdr)
             meas_data = self.e2sm_kpm.extract_meas_data(indication_msg)
 
-            # Use colletStartTime if available, otherwise use current time
-            timestamp_unix = hdr_info.get('colletStartTime', datetime.now(timezone.utc).timestamp())
-            # Ensure timestamp is timezone-aware timezone.utc for InfluxDB
-            timestamp_iso = datetime.fromtimestamp(timestamp_unix, tz=timezone.utc).isoformat()
-
+            collet_time = hdr_info.get('colletStartTime')
+            if isinstance(collet_time, datetime):
+                timestamp_iso = collet_time.astimezone(timezone.utc).isoformat()
+            else:
+                # Assume float or int
+                timestamp_unix = collet_time if collet_time is not None else datetime.now(timezone.utc).timestamp()
+                timestamp_iso = datetime.fromtimestamp(timestamp_unix, tz=timezone.utc).isoformat()
             granulPeriod = meas_data.get("granulPeriod")
 
             common_tags = {
