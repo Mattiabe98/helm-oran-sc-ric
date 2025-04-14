@@ -501,30 +501,29 @@ def _parse_args() -> Tuple[Optional[InfluxDBClient], str, str, bool, int, int, i
         description="Receives srsRAN UDP metrics and RIC E2 metrics, pushing both to InfluxDB."
     )
     # srsRAN Listener Args
-    parser.add_argument("--udp-port", type=int, default='55555', required=False, help="UDP Port to listen for srsRAN metrics.")
+    parser.add_argument("--udp-port", type=int, required=True, help="UDP Port to listen for srsRAN metrics.")
 
     # InfluxDB Args
     parser.add_argument(
         "--db-config",
         nargs="*",
-        required=False,
-        default='url=http://influxdb2.srs5g.svc.cluster.local:8086 token=605bc59413b7d5457d181ccf20f9fda15693f81b068d70396cc183081b264f3b org=srs',
+        required=True,
         help='InfluxDB configuration as "key=value" pairs (e.g., url=http://localhost:8086 token=mytoken org=myorg). Required: url, token, org.',
     )
-    parser.add_argument("--bucket", required=False, default='srsran', help="InfluxDB Bucket to save data.")
+    parser.add_argument("--bucket", required=True, help="InfluxDB Bucket to save data.")
     parser.add_argument(
         "--clean-bucket", action="store_true", help="Delete and recreate the InfluxDB bucket before starting."
     )
-    parser.add_argument("--testbed", required=False, default='default', help="Identifier for the testbed environment (used as a tag).")
+    parser.add_argument("--testbed", required=True, help="Identifier for the testbed environment (used as a tag).")
 
     # RIC / xApp Args
     parser.add_argument("--xapp-config", type=str, default='', help="xApp config file path (passed to xAppBase).")
     parser.add_argument("--http-server-port", type=int, default=8090, help="HTTP server listen port for xApp.")
     parser.add_argument("--rmr-port", type=int, default=4560, help="RMR listen port for xApp.")
-    parser.add_argument("--e2-node-id", type=str, default='gnbd_001_001_00019b_1', help="Target E2 Node ID for subscription.")
+    parser.add_argument("--e2-node-id", type=str, default='gnb_001_001_00001', help="Target E2 Node ID for subscription.")
     parser.add_argument("--ran-func-id", type=int, default=2, help="Target E2SM KPM RAN function ID.")
     parser.add_argument("--kpm-report-style", type=int, default=1, choices=[1, 2, 3, 4, 5], help="E2SM KPM Report Style for subscription.")
-    parser.add_argument("--ue-ids", type=str, default='0', help="Comma-separated UE ID(s) for relevant KPM styles (e.g., 1,2,3).")
+    parser.add_argument("--ue-ids", type=str, default='1', help="Comma-separated UE ID(s) for relevant KPM styles (e.g., 1,2,3).")
     parser.add_argument("--metrics", type=str, default='DRB.UEThpUl,DRB.UEThpDl', help="Comma-separated E2SM KPM metric names.")
 
     # General Args
