@@ -528,7 +528,7 @@ def _parse_args() -> Tuple[Optional[InfluxDBClient], str, str, bool, int, int, i
 
     # General Args
     parser.add_argument(
-        "--log-level", choices=logging.getLevelNamesMapping().keys(), default="INFO", help="Logging level."
+        "--log-level", choices=logging._nameToLevel.keys(), default="INFO", help="Logging level."
     )
 
     args = parser.parse_args()
@@ -563,7 +563,7 @@ def _parse_args() -> Tuple[Optional[InfluxDBClient], str, str, bool, int, int, i
         args.testbed,
         args.clean_bucket,
         args.udp_port,
-        logging.getLevelNamesMapping()[args.log_level],
+        logging._nameToLevel[args.log_level],
         # xApp args
         args.http_server_port,
         args.rmr_port,
