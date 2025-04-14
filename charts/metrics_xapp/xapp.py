@@ -372,7 +372,7 @@ def _publish_data(
                             write_api,
                             bucket=bucket,
                             record={
-                                "measurement": "srsran_ue_info",
+                                "measurement": "ue_info",
                                 "tags": {
                                     "pci": str(pci),
                                     "rnti": f"{rnti:x}", # Keep hex format
@@ -392,7 +392,7 @@ def _publish_data(
                             write_api,
                             bucket=bucket,
                             record={
-                                "measurement": "srsran_app_resource_usage",
+                                "measurement": "app_resource_usage",
                                 "tags": {"testbed": testbed},
                                 "fields": dict(convert_integers_to_floats(fields).items()),
                                 "time": timestamp,
@@ -412,7 +412,7 @@ def _publish_data(
                                 write_api,
                                 bucket=bucket,
                                 record={
-                                    "measurement": "srsran_ofh_ul_received_packets",
+                                    "measurement": "ofh_ul_received_packets",
                                     "tags": {
                                         "pci": str(pci),
                                         "testbed": testbed,
