@@ -37,6 +37,8 @@ spec:
         - name: python-xapp-runner
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            privileged: true          
           # --- Container Level Settings ---
           ports:
             - containerPort: {{ .Values.service.port }}
