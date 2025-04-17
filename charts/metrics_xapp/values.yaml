@@ -33,8 +33,13 @@ volumeMounts:
     mountPath: /opt/xApps/files/
   - mountPath: /mnt/data  # Mount path inside the container
     name: storage
+  - name: cpu
+    mountPath: /dev/cpu
 
 volumes:
+  - name: cpu
+    hostPath:
+      path: "/dev/cpu"
   - name: xapp-rtg
     configMap:
       name: xapp-rtg
