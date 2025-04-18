@@ -49,6 +49,13 @@ spec:
               cp -RL /opt/xApps/lib /tmp/xApp/;
               chmod +x /tmp/xApp/start-metrics.sh;
               exec python3 -u /tmp/xApp/xapp.py --log-level DEBUG --udp-port "${PORT}${RETINA_PORTS}" --bucket "${BUCKET}" --testbed "${TESTBED}" --db-config url="${URL}" org="${ORG}" token="${TOKEN}";
+          resources:
+            requests:
+              memory: 50Mi
+              cpu: 32
+            limits:
+              memory: 50Mi
+              cpu: 32
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
