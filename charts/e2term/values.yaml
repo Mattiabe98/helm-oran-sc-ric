@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: 10.22.17.152:5000/oran-ric/ric-plt-e2
+  repository: 10.22.17.156:5000/oran-ric/ric-plt-e2
   pullPolicy: IfNotPresent
   tag: "6.0.4" # Or use .Values.global.tag
 

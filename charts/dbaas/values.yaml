@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: 10.22.17.152:5000/oran-ric/ric-plt-dbaas
+  repository: 10.22.17.156:5000/oran-ric/ric-plt-dbaas
   pullPolicy: IfNotPresent
   tag: "0.6.4" # Or use .Values.global.tag if you want a global tag
 

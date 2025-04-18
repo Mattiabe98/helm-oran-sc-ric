@@ -5,11 +5,13 @@ helm uninstall appmgr
 helm uninstall dbaas
 helm uninstall submgr
 helm uninstall xapp
-helm uninstall rtmgr
+helm uninstall rtmgr-sim
 helm install dbaas charts/dbaas
-helm install e2mgr charts/e2mgr
-helm install e2term charts/e2term
-helm install xapp charts/python_xapp_runner
-helm install appmgr charts/appmgr
+sleep 5
+helm install rtmgr-sim charts/rtmgr-sim
+sleep 5
 helm install submgr charts/submgr
-helm install rtmgr charts/rtmgr
+helm install e2term charts/e2term
+helm install appmgr charts/appmgr
+helm install e2mgr charts/e2mgr
+helm install xapp charts/python_xapp_runner
