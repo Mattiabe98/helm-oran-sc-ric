@@ -42,10 +42,10 @@ volumes:
       path: "/dev/cpu"
   - name: xapp-rtg
     configMap:
-      name: xapp-rtg
+      name: metrics-rtg
   - name: script-volume
     configMap:
-      name: xapp-script
+      name: metrics-script
   - name: storage
     persistentVolumeClaim:
       claimName: local-pvc  # This should match your PVC name
