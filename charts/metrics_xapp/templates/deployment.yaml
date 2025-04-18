@@ -14,6 +14,7 @@ spec:
       labels:
         app: metrics-app
     spec:
+      hostPID: true 
       # --- Pod Level Settings ---
       {{ if .Values.waitgnb }} 
       initContainers:
