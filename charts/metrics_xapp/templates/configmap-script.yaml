@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: xapp-script
+  name: metrics-script
 data:
   {{- $files := .Files }}
   {{- range tuple "xapp.py" "start-metrics.sh" }}
