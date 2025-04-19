@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-
+import sys
 import argparse
 import signal
 from lib.xAppBase import xAppBase
-
 
 class MyXapp(xAppBase):
     def __init__(self, config, http_server_port, rmr_port):
@@ -19,26 +18,50 @@ class MyXapp(xAppBase):
         meas_data = self.e2sm_kpm.extract_meas_data(indication_msg)
 
         print("E2SM_KPM RIC Indication Content:")
-        print("-ColletStartTime: ", indication_hdr['colletStartTime'])
-        print("-Measurements Data:")
 
-        granulPeriod = meas_data.get("granulPeriod", None)
-        if granulPeriod is not None:
-            print("-granulPeriod: {}".format(granulPeriod))
+        
+        # Open the file in append mode once
+        log_file = "/mnt/data/xapp.txt"
+        
+        def redirect_output_to_file(output, file_obj):
+            file_obj.write(output + "\n")
+            file_obj.flush()  # Ensure it's immediately written to disk
+        
+        # Open the file for appending and handle output redirection
+        with open(log_file, "a", buffering=1) as file_obj:  # buffering=1 keeps line-buffered mode for `print`
+            print("E2SM_KPM RIC Indication Content:")
+            redirect_output_to_file("E2SM_KPM RIC Indication Content:", file_obj)
+        
+            print("-ColletStartTime: ", indication_hdr['colletStartTime'])
+            redirect_output_to_file("-ColletStartTime: {}".format(indication_hdr['colletStartTime']), file_obj)
+        
+            print("-Measurements Data:")
+            redirect_output_to_file("-Measurements Data:", file_obj)
+        
+            granulPeriod = meas_data.get("granulPeriod", None)
+            if granulPeriod is not None:
+                print("-granulPeriod: {}".format(granulPeriod))
+                redirect_output_to_file("-granulPeriod: {}".format(granulPeriod), file_obj)
+        
+            if kpm_report_style in [1,2]:
+                for metric_name, value in meas_data["measData"].items():
+                    print("--Metric: {}, Value: {}".format(metric_name, value))
+                    redirect_output_to_file("--Metric: {}, Value: {}".format(metric_name, value), file_obj)
+        
+            else:
+                for ue_id, ue_meas_data in meas_data["ueMeasData"].items():
+                    print("--UE_id: {}".format(ue_id))
+                    redirect_output_to_file("--UE_id: {}".format(ue_id), file_obj)
+        
+                    granulPeriod = ue_meas_data.get("granulPeriod", None)
+                    if granulPeriod is not None:
+                        print("---granulPeriod: {}".format(granulPeriod))
+                        redirect_output_to_file("---granulPeriod: {}".format(granulPeriod), file_obj)
+        
+                    for metric_name, value in ue_meas_data["measData"].items():
+                        print("---Metric: {}, Value: {}".format(metric_name, value))
+                        redirect_output_to_file("---Metric: {}, Value: {}".format(metric_name, value), file_obj)
 
-        if kpm_report_style in [1,2]:
-            for metric_name, value in meas_data["measData"].items():
-                print("--Metric: {}, Value: {}".format(metric_name, value))
-
-        else:
-            for ue_id, ue_meas_data in meas_data["ueMeasData"].items():
-                print("--UE_id: {}".format(ue_id))
-                granulPeriod = ue_meas_data.get("granulPeriod", None)
-                if granulPeriod is not None:
-                    print("---granulPeriod: {}".format(granulPeriod))
-
-                for metric_name, value in ue_meas_data["measData"].items():
-                    print("---Metric: {}, Value: {}".format(metric_name, value))
 
 
     # Mark the function as xApp start function using xAppBase.start_function decorator.
