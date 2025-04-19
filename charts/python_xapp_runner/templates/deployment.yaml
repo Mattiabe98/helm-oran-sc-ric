@@ -43,8 +43,7 @@ spec:
             - mkdir /tmp/xApp;
               cp -RL /opt/xApps/files/* /tmp/xApp/;
               cp -RL /opt/xApps/lib /tmp/xApp/;
-              chmod +x /tmp/xApp/start-metrics.sh;
-              exec /tmp/xApp/start-metrics.sh;
+              exec python3 -u /tmp/xApp/xapp.py;
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
