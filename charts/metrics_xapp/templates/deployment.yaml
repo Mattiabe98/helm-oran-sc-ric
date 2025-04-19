@@ -52,10 +52,10 @@ spec:
               exec python3 -u /tmp/xApp/xapp.py --log-level DEBUG --udp-port "${PORT}${RETINA_PORTS}" --bucket "${BUCKET}" --testbed "${TESTBED}" --db-config url="${URL}" org="${ORG}" token="${TOKEN}";
           resources:
             requests:
-              memory: 50Mi
+              memory: 500Mi
               cpu: 32
             limits:
-              memory: 50Mi
+              memory: 500Mi
               cpu: 32
           env:
             {{- range $key, $value := .Values.env }}
@@ -64,8 +64,6 @@ spec:
             {{- end }}
           volumeMounts:
             {{- toYaml .Values.volumeMounts | nindent 12 }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           stdin: true
           tty: true
 
