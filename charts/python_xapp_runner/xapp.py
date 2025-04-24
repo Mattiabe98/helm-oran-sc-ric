@@ -3,6 +3,7 @@ import sys
 import argparse
 import signal
 from lib.xAppBase import xAppBase
+from datetime import datetime
 
 class MyXapp(xAppBase):
     def __init__(self, config, http_server_port, rmr_port):
@@ -21,8 +22,8 @@ class MyXapp(xAppBase):
 
         
         # Open the file in append mode once
-        log_file = "/mnt/data/xapp.txt"
-        
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        log_file = f"/mnt/data/xapp/xapp_{timestamp}.txt"
         def redirect_output_to_file(output, file_obj):
             file_obj.write(output + "\n")
             file_obj.flush()  # Ensure it's immediately written to disk
