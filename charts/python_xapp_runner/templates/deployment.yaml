@@ -22,7 +22,7 @@ spec:
           command:
             - /bin/sh
             - -c
-            - until ncat -zvu srsran-5g-gtpu 2152; do echo "waiting for gNB to start"; sleep 1; done
+            - until ncat -zvu srsran-5g-du-gtpu 2152; do echo "waiting for DU to start"; sleep 1; done
           resources:
             requests:
               memory: 50Mi
