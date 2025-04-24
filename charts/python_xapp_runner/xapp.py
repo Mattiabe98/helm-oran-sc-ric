@@ -9,6 +9,8 @@ class MyXapp(xAppBase):
     def __init__(self, config, http_server_port, rmr_port):
         super(MyXapp, self).__init__(config, http_server_port, rmr_port)
 
+        self.timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.log_file = f"/mnt/data/xapp/xapp_{self.timestamp}.txt"
     def my_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id):
         if kpm_report_style == 2:
             print("\nRIC Indication Received from {} for Subscription ID: {}, KPM Report Style: {}, UE ID: {}".format(e2_agent_id, subscription_id, kpm_report_style, ue_id))
@@ -22,14 +24,12 @@ class MyXapp(xAppBase):
 
         
         # Open the file in append mode once
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        log_file = f"/mnt/data/xapp/xapp_{timestamp}.txt"
         def redirect_output_to_file(output, file_obj):
             file_obj.write(output + "\n")
             file_obj.flush()  # Ensure it's immediately written to disk
         
         # Open the file for appending and handle output redirection
-        with open(log_file, "a", buffering=1) as file_obj:  # buffering=1 keeps line-buffered mode for `print`
+        with open(self.log_file, "a", buffering=1) as file_obj:  # buffering=1 keeps line-buffered mode for `print`
             print("E2SM_KPM RIC Indication Content:")
             redirect_output_to_file("E2SM_KPM RIC Indication Content:", file_obj)
         
