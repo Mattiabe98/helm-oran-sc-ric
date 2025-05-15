@@ -22,7 +22,7 @@ spec:
           command:
             - /bin/sh
             - -c
-            - until ping -c 1  srsran-5g-du-gtpu; do echo waiting for srsDU to start; sleep 1; done
+            - until ping -c 1  srsran-5g-du-5-gtpu; do echo waiting for srsDU to start; sleep 1; done
             - sleep 5
           resources:
             requests:
