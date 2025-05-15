@@ -3,10 +3,12 @@ import sys
 import argparse
 import signal
 from lib.xAppBase import xAppBase # Assuming this is your xApp base library
-from datetime import datetime, timedelta
+from datetime import datetime # For datetime.now(), and can be used for isinstance checks
+# import datetime as dt # Alternative for clarity: dt.datetime
 import re # For parsing CPU ranges
-import threading # For locking and timer
-import time # For sleep in main if needed, and time functions
+import threading # For the dummy periodic processor
+import time      # For the dummy periodic processor
+import queue     # For passing data to the dummy periodic processor
 
 # Helper function to parse CPU allocation strings
 def parse_cpu_allocation(cpu_str):
@@ -47,226 +49,199 @@ def parse_cpu_allocation(cpu_str):
     return sorted(list(cpus))
 
 class MyXapp(xAppBase):
-    def __init__(self, config, http_server_port, rmr_port, tdp_min_watts, tdp_max_watts,
-                 aggregation_check_interval_sec=1.0, aggregation_grace_period_ms=500):
+    def __init__(self, config, http_server_port, rmr_port, tdp_min_watts, tdp_max_watts):
         super(MyXapp, self).__init__(config, http_server_port, rmr_port)
 
-        self.timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        self.log_file = f"/mnt/data/xapp/xapp_{self.timestamp}.txt"
+        self.instance_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.log_file = f"/mnt/data/xapp/xapp_{self.instance_timestamp}.txt"
         print(f"Logging RIC Indication data to: {self.log_file}")
 
         self.tdp_min_watts = tdp_min_watts
         self.tdp_max_watts = tdp_max_watts
         print(f"Desired TDP Limit Range: {self.tdp_min_watts}W - {self.tdp_max_watts}W")
-        
-        self.e2_node_custom_configs = {} # To store QoS/CPU info keyed by e2_node_id
+        self.e2_node_custom_configs = {}
 
-        # For KPM aggregation
-        self.kpm_report_buffers = {}
-        self.expected_du_ids = set()
-        self.aggregation_lock = threading.Lock()
-        self.aggregation_check_interval_sec = aggregation_check_interval_sec
-        self.aggregation_grace_period_ms = aggregation_grace_period_ms
-        self.metric_name_dl_thp = "DRB.UEThpDl" # Standardized metric name for DL throughput
-        self.metric_name_ul_thp = "DRB.UEThpUl" # Standardized metric name for UL throughput
-        
-        self._stop_event = threading.Event() # To signal the timer thread to stop
-        self.processing_timer = None
-        self._start_periodic_processor() # Start the aggregation timer
+        # For the _periodic_aggregation_processor
+        # The user should integrate this with their actual data passing mechanism
+        self.data_queue_for_aggregator = queue.Queue()
+        self.aggregation_thread = None
+        self.stop_aggregation_event = threading.Event()
 
-    def _start_periodic_processor(self):
-        """Starts or restarts the periodic aggregation processor timer."""
-        if not self._stop_event.is_set(): # Only schedule if not stopping
-            self.processing_timer = threading.Timer(self.aggregation_check_interval_sec, self._periodic_aggregation_processor)
-            self.processing_timer.daemon = True # Allows main program to exit even if timer is alive
-            self.processing_timer.start()
-
+    # --- THIS IS A PLACEHOLDER for the user's _periodic_aggregation_processor ---
+    # The user needs to ADAPT or REPLACE this with their actual method.
+    # The key is how 'collet_start_time_from_data' is handled.
     def _periodic_aggregation_processor(self):
-        """
-        Periodically checks buffered KPM reports and aggregates them if complete
-        or if a grace period has expired.
-        """
-        # print(f"[{datetime.now()}] Periodic aggregator running...") # Debug print
-        with self.aggregation_lock:
-            current_time = datetime.now()
-            # Iterate over a copy of keys because we might modify the dict during iteration
-            for collet_start_time_str in list(self.kpm_report_buffers.keys()):
-                buffer_entry = self.kpm_report_buffers.get(collet_start_time_str)
-                if not buffer_entry: # Should not happen if key was from list(keys())
-                    continue
+        print(f"[{datetime.now()}] AGG_PROC_THREAD: Starting _periodic_aggregation_processor thread...")
+        while not self.stop_aggregation_event.is_set():
+            try:
+                # This is an EXAMPLE of how data might be retrieved.
+                # The user's actual data item structure passed to this processor might be different.
+                data_item = self.data_queue_for_aggregator.get(timeout=1)
+                if data_item is None: # Sentinel to stop the thread
+                    print(f"[{datetime.now()}] AGG_PROC_THREAD: Received None, stopping.")
+                    break
 
-                try:
-                    # Assuming ColletStartTime format is "YYYY-MM-DD HH:MM:SS"
-                    collet_start_dt = datetime.strptime(collet_start_time_str, "%Y-%m-%d %H:%M:%S")
-                except ValueError:
-                    print(f"Error parsing ColletStartTime: {collet_start_time_str} in buffer. Removing entry.")
-                    del self.kpm_report_buffers[collet_start_time_str]
-                    continue
-                
-                granul_period_ms = buffer_entry.get("granul_period_ms", 1000) # Use stored or default
-                
-                all_reported = len(buffer_entry["received_from_dus"]) == len(self.expected_du_ids)
-                
-                interval_end_time = collet_start_dt + timedelta(milliseconds=granul_period_ms)
-                grace_period_expiry_time = interval_end_time + timedelta(milliseconds=self.aggregation_grace_period_ms)
-                grace_period_expired = current_time > grace_period_expiry_time
+                # --- IMPORTANT PART ---
+                # Assuming data_item is a dictionary that includes 'colletStartTime'
+                # which was extracted by self.e2sm_kpm.extract_hdr_info()
+                # and is ALREADY a datetime.datetime object or the string 'N/A'.
+                collet_start_time_from_data = data_item.get('colletStartTime') # This is the crucial variable
+                e2_node_id_from_data = data_item.get('e2_node_id', 'UnknownDU')
+                # --- END OF IMPORTANT PART ---
 
-                if all_reported or grace_period_expired:
-                    log_agg_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-                    agg_header = f"\n--- Aggregated KPM Data for Interval Starting: {collet_start_time_str} (Aggregated at: {log_agg_time}) ---"
-                    print(agg_header)
-                    print(f"  Total {self.metric_name_dl_thp}: {buffer_entry['total_dl_thp']:.2f}")
-                    print(f"  Total {self.metric_name_ul_thp}: {buffer_entry['total_ul_thp']:.2f}")
-                    print(f"  Reported DUs ({len(buffer_entry['received_from_dus'])}/{len(self.expected_du_ids)}): {sorted(list(buffer_entry['received_from_dus']))}")
-                    
-                    missing_dus_info = ""
-                    if grace_period_expired and not all_reported:
-                        missing_dus = self.expected_du_ids - buffer_entry["received_from_dus"]
-                        missing_dus_info = f"  Grace period expired. Missing reports from: {sorted(list(missing_dus))}"
-                        print(missing_dus_info)
-                    print("-----------------------------------------------------------------------------------------------------")
-                    
-                    with open(self.log_file, "a", buffering=1) as file_obj:
-                        file_obj.write(agg_header + "\n")
-                        file_obj.write(f"  Total {self.metric_name_dl_thp}: {buffer_entry['total_dl_thp']:.2f}\n")
-                        file_obj.write(f"  Total {self.metric_name_ul_thp}: {buffer_entry['total_ul_thp']:.2f}\n")
-                        file_obj.write(f"  Reported DUs ({len(buffer_entry['received_from_dus'])}/{len(self.expected_du_ids)}): {sorted(list(buffer_entry['received_from_dus']))}\n")
-                        if missing_dus_info:
-                             file_obj.write(missing_dus_info + "\n")
-                        file_obj.write("-----------------------------------------------------------------------------------------------------\n")
-                        file_obj.flush()
+                # print(f"[{datetime.now()}] AGG_PROC: Received item for DU {e2_node_id_from_data} with colletStartTime: {collet_start_time_from_data} (type: {type(collet_start_time_from_data)})")
 
-                    del self.kpm_report_buffers[collet_start_time_str] # Remove processed entry
-        
-        self._start_periodic_processor() # Reschedule the timer
+                collet_start_dt_for_logic = None # Initialize the variable to hold the processed datetime
 
-    def my_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id_for_style2):
+                # --- CORRECT HANDLING OF collet_start_time_from_data ---
+                # This is where the fix for the TypeError happens.
+                if isinstance(collet_start_time_from_data, datetime): # Check if it's a datetime.datetime object
+                    collet_start_dt_for_logic = collet_start_time_from_data # Use it directly
+                    # print(f"[{datetime.now()}] AGG_PROC: DU {e2_node_id_from_data}: colletStartTime is datetime object: {collet_start_dt_for_logic}")
+                    # Now you can use collet_start_dt_for_logic for comparisons, formatting, etc.
+                    # Example: collet_start_dt_for_logic.strftime("%Y-%m-%d %H:%M:%S")
+
+                elif isinstance(collet_start_time_from_data, str) and collet_start_time_from_data == 'N/A':
+                    print(f"[{datetime.now()}] AGG_PROC: DU {e2_node_id_from_data}: colletStartTime is 'N/A'. May skip further processing.")
+                    # collet_start_dt_for_logic remains None, or handle as an error
+
+                elif isinstance(collet_start_time_from_data, str):
+                    # This case should ideally not occur if extract_hdr_info works as expected
+                    # and 'N/A' is the only string fallback from .get().
+                    print(f"[{datetime.now()}] AGG_PROC: DU {e2_node_id_from_data}: colletStartTime is an unexpected string '{collet_start_time_from_data}'.")
+                    # If you *did* expect other string formats, you would parse them here.
+                    # However, the original error indicates 'collet_start_time_from_data' was a datetime object.
+                    # The line that WOULD cause the error if collet_start_time_from_data was a datetime object:
+                    #   collet_start_dt_for_logic = datetime.strptime(collet_start_time_from_data, "%Y-%m-%d %H:%M:%S")
+                    pass # Or log an error, as this is unexpected.
+
+                else:
+                    # It's neither a datetime object nor a string we explicitly handle
+                    print(f"[{datetime.now()}] AGG_PROC: DU {e2_node_id_from_data}: colletStartTime is of an unexpected type ({type(collet_start_time_from_data)}): {collet_start_time_from_data}")
+                    # collet_start_dt_for_logic remains None
+
+                # --- END OF CORRECT HANDLING ---
+
+                if collet_start_dt_for_logic:
+                    # ... THE USER'S ACTUAL AGGREGATION LOGIC using collet_start_dt_for_logic ...
+                    # print(f"[{datetime.now()}] AGG_PROC: DU {e2_node_id_from_data}: Successfully processed item with collet_start_dt: {collet_start_dt_for_logic}")
+                    pass # Placeholder for actual work
+                else:
+                    # print(f"[{datetime.now()}] AGG_PROC: DU {e2_node_id_from_data}: Failed to determine valid collet_start_dt for this item. Skipping.")
+                    pass
+
+                self.data_queue_for_aggregator.task_done()
+            except queue.Empty:
+                # Timeout is normal, allows checking stop_aggregation_event
+                continue
+            except Exception as e:
+                print(f"[{datetime.now()}] AGG_PROC_THREAD: Error in _periodic_aggregation_processor loop: {e}")
+                # import traceback # For more detailed debugging if needed
+                # traceback.print_exc()
+        print(f"[{datetime.now()}] AGG_PROC_THREAD: _periodic_aggregation_processor thread finished.")
+    # --- END OF PLACEHOLDER ---
+
+    def my_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id):
+        current_time_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
         if kpm_report_style == 2:
-            print(f"\nRIC Indication Received from {e2_agent_id} for Subscription ID: {subscription_id}, KPM Report Style: {kpm_report_style}, UE ID: {ue_id_for_style2}")
+            print(f"\n[{current_time_str}] RIC Indication from {e2_agent_id} [SubID: {subscription_id}], Style: {kpm_report_style}, UE: {ue_id}")
         else:
-            print(f"\nRIC Indication Received from {e2_agent_id} for Subscription ID: {subscription_id}, KPM Report Style: {kpm_report_style}")
+            print(f"\n[{current_time_str}] RIC Indication from {e2_agent_id} [SubID: {subscription_id}], Style: {kpm_report_style}")
 
         try:
+            # self.e2sm_kpm.extract_hdr_info MODIFIES indication_hdr IN PLACE or returns a new dict.
+            # 'colletStartTime' in the returned dict will be a datetime.datetime object or original if not parsable.
             indication_hdr_extracted = self.e2sm_kpm.extract_hdr_info(indication_hdr)
             meas_data = self.e2sm_kpm.extract_meas_data(indication_msg)
         except Exception as e:
             print(f"Error extracting KPM data from E2 node {e2_agent_id}: {e}")
             with open(self.log_file, "a", buffering=1) as file_obj:
-                log_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-                file_obj.write(f"[{log_time}] ERROR processing indication from {e2_agent_id} for sub {subscription_id}: {e}\n")
-                file_obj.write(f"Header: {indication_hdr}\n")
-                file_obj.write(f"Message: {indication_msg}\n")
+                file_obj.write(f"[{datetime.now()}] ERROR processing indication from {e2_agent_id} for sub {subscription_id}: {e}\n")
+                file_obj.write(f"Raw Header: {indication_hdr}\n")
+                file_obj.write(f"Raw Message: {indication_msg}\n")
             return
 
-        # Log individual report details
-        def redirect_output_to_file(output, file_obj):
-            file_obj.write(output + "\n")
-            file_obj.flush()
+        # 'colletStartTime' in indication_hdr_extracted is now a datetime.datetime object
+        # (due to extract_hdr_info) or 'N/A' (if using .get with 'N/A' as default and key not found).
+        collet_start_time_as_object = indication_hdr_extracted.get('colletStartTime', 'N/A')
+
+        # Example: Pass relevant data to the aggregation processor via queue
+        # The user needs to adapt this to how their _periodic_aggregation_processor actually gets data.
+        if self.aggregation_thread and self.aggregation_thread.is_alive():
+            item_for_aggregator = {
+                'e2_node_id': e2_agent_id,
+                'subscription_id': subscription_id,
+                'colletStartTime': collet_start_time_as_object, # This is ALREADY datetime or 'N/A'
+                'meas_data': meas_data, # Pass whatever part of data is needed
+                'received_at': datetime.now() # For debugging/latency checks
+            }
+            self.data_queue_for_aggregator.put(item_for_aggregator)
+
+        # Logging to file
+        def redirect_output_to_file(output_str, file_obj_handle):
+            file_obj_handle.write(output_str + "\n")
+            file_obj_handle.flush()
 
         with open(self.log_file, "a", buffering=1) as file_obj:
-            timestamp_log = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-            log_prefix = f"[{timestamp_log}] [DU: {e2_agent_id}] [SubID: {subscription_id}]"
+            log_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+            log_prefix = f"[{log_timestamp}] [DU: {e2_agent_id}] [SubID: {subscription_id}]"
 
             redirect_output_to_file(f"{log_prefix} E2SM_KPM RIC Indication Content:", file_obj)
-            # print(f"{log_prefix} E2SM_KPM RIC Indication Content:") # Already printed above
-
-            collet_start_time = indication_hdr_extracted.get('colletStartTime', 'N/A')
-            redirect_output_to_file(f"{log_prefix} -ColletStartTime: {collet_start_time}", file_obj)
-            # print(f"-ColletStartTime: {collet_start_time}")
+            # Displaying the collet_start_time_as_object. If it's datetime, it will print nicely.
+            redirect_output_to_file(f"{log_prefix} -ColletStartTime: {collet_start_time_as_object} (type: {type(collet_start_time_as_object)})", file_obj)
+            # Also print to console for immediate feedback
+            print(f"  -ColletStartTime: {collet_start_time_as_object} (type: {type(collet_start_time_as_object)})")
 
             redirect_output_to_file(f"{log_prefix} -Measurements Data:", file_obj)
-            # print("-Measurements Data:")
-
-            granulPeriod_val = meas_data.get("granulPeriod", None)
-            if granulPeriod_val is not None:
-                redirect_output_to_file(f"{log_prefix} -granulPeriod: {granulPeriod_val}", file_obj)
-                # print(f"-granulPeriod: {granulPeriod_val}")
+            granulPeriod = meas_data.get("granulPeriod", None)
+            if granulPeriod is not None:
+                redirect_output_to_file(f"{log_prefix} -granulPeriod: {granulPeriod}", file_obj)
 
             if kpm_report_style in [1, 2]:
                 if "measData" in meas_data:
                     for metric_name, value in meas_data["measData"].items():
                         redirect_output_to_file(f"{log_prefix} --Metric: {metric_name}, Value: {value}", file_obj)
-                        # print(f"--Metric: {metric_name}, Value: {value}")
                 else:
                     redirect_output_to_file(f"{log_prefix} --No 'measData' found in KPM Style {kpm_report_style} report.", file_obj)
-            # Add comprehensive logging for styles 3,4,5 if needed, similar to style 1/2
-            # ...
-
-        # --- Aggregation Logic ---
-        collet_start_time_str = indication_hdr_extracted.get('colletStartTime')
-        if not collet_start_time_str:
-            print(f"Warning: ColletStartTime not found in KPM header from {e2_agent_id}. Cannot aggregate.")
-            return
-
-        current_dl_thp = 0.0
-        current_ul_thp = 0.0
-        # granulPeriod_val already extracted above for logging
-
-        if kpm_report_style in [1, 2]: # Cell-level reports
-            if "measData" in meas_data:
-                dl_val_list = meas_data["measData"].get(self.metric_name_dl_thp)
-                ul_val_list = meas_data["measData"].get(self.metric_name_ul_thp)
-                if dl_val_list and isinstance(dl_val_list, list) and len(dl_val_list) > 0:
-                    try: current_dl_thp = float(dl_val_list[0])
-                    except (ValueError, TypeError): print(f"Warning: Could not parse DL Thp value {dl_val_list[0]} from {e2_agent_id}")
-                if ul_val_list and isinstance(ul_val_list, list) and len(ul_val_list) > 0:
-                    try: current_ul_thp = float(ul_val_list[0])
-                    except (ValueError, TypeError): print(f"Warning: Could not parse UL Thp value {ul_val_list[0]} from {e2_agent_id}")
-        # Add logic for UE-level reports (styles 3, 4, 5) if aggregation from them is needed.
-        # This would involve iterating meas_data["ueMeasData"] and summing up.
-
-        with self.aggregation_lock:
-            if collet_start_time_str not in self.kpm_report_buffers:
-                self.kpm_report_buffers[collet_start_time_str] = {
-                    "total_dl_thp": 0.0,
-                    "total_ul_thp": 0.0,
-                    "received_from_dus": set(),
-                    "granul_period_ms": granulPeriod_val if granulPeriod_val is not None else 1000,
-                    "first_report_arrival_time": datetime.now() # For debugging or more advanced timeout logic
-                }
-            
-            buffer_entry = self.kpm_report_buffers[collet_start_time_str]
-            
-            if e2_agent_id not in buffer_entry["received_from_dus"]: # Add only once per DU per interval
-                buffer_entry["total_dl_thp"] += current_dl_thp
-                buffer_entry["total_ul_thp"] += current_ul_thp
-                buffer_entry["received_from_dus"].add(e2_agent_id)
-                if granulPeriod_val is not None and buffer_entry["granul_period_ms"] == 1000: # Update if default was used
-                     buffer_entry["granul_period_ms"] = granulPeriod_val
-            # else:
-                # print(f"Note: DU {e2_agent_id} may have re-sent data for interval {collet_start_time_str}. Using first report's values.")
-        # --- End of Aggregation Logic ---
+            else: # Styles 3, 4, 5 involve ueMeasData
+                if "ueMeasData" in meas_data:
+                    for ue_id_report, ue_meas_data in meas_data["ueMeasData"].items():
+                        redirect_output_to_file(f"{log_prefix} --UE_id: {ue_id_report}", file_obj)
+                        granulPeriod_ue = ue_meas_data.get("granulPeriod", None)
+                        if granulPeriod_ue is not None:
+                            redirect_output_to_file(f"{log_prefix} ---granulPeriod: {granulPeriod_ue}", file_obj)
+                        if "measData" in ue_meas_data:
+                            for metric_name, value in ue_meas_data["measData"].items():
+                                redirect_output_to_file(f"{log_prefix} ---Metric: {metric_name}, Value: {value}", file_obj)
+                        else:
+                            redirect_output_to_file(f"{log_prefix} ---No 'measData' found for UE {ue_id_report}.", file_obj)
+                else:
+                    redirect_output_to_file(f"{log_prefix} --No 'ueMeasData' found in KPM Style {kpm_report_style} report.", file_obj)
 
     @xAppBase.start_function
     def start(self, e2_node_configurations, kpm_report_style, ue_ids_config, metric_names):
-        with self.aggregation_lock:
-            self.expected_du_ids = {node_config['id'] for node_config in e2_node_configurations}
-            print(f"xApp will expect reports from {len(self.expected_du_ids)} DUs: {sorted(list(self.expected_du_ids))}")
+        report_period = 1000
+        granul_period = 1000
 
-        report_period = 1000 # ms - How often DU sends RIC Report (E2 Action)
-        granul_period = 1000 # ms - Granularity of measurement collection at DU (E2 Action)
+        # Start the aggregation thread (if not already running)
+        if not self.aggregation_thread or not self.aggregation_thread.is_alive():
+            self.stop_aggregation_event.clear() # Ensure it's not set from a previous run
+            self.aggregation_thread = threading.Thread(target=self._periodic_aggregation_processor, daemon=True)
+            self.aggregation_thread.start()
+            print("Placeholder aggregation processor thread started.")
 
         for node_config in e2_node_configurations:
             e2_node_id = node_config['id']
             qos_class = node_config['qos']
             cpu_allocation = node_config['cpus']
-
             self.e2_node_custom_configs[e2_node_id] = {'qos': qos_class, 'cpus': cpu_allocation}
-
             print(f"\nProcessing subscriptions for E2 Node ID: {e2_node_id}")
             print(f"  User-defined QoS Class: {qos_class}")
             print(f"  User-defined CPU Allocation: {cpu_allocation}")
 
             current_ue_id_for_style2 = ue_ids_config[0] if ue_ids_config else None
-            
             subscription_callback = lambda agent, sub, hdr, msg, ue_id_bound=current_ue_id_for_style2: \
                 self.my_subscription_callback(agent, sub, hdr, msg, kpm_report_style, ue_id_bound if kpm_report_style == 2 else None)
-
-            # Common logic for checking required metrics for aggregation
-            if kpm_report_style in [1, 2]:
-                if not (self.metric_name_dl_thp in metric_names and self.metric_name_ul_thp in metric_names):
-                    print(f"Warning: For aggregation with style {kpm_report_style} on {e2_node_id}, expecting metrics '{self.metric_name_dl_thp}' and '{self.metric_name_ul_thp}'. "
-                          f"Ensure they are in --metrics: {metric_names}")
 
             if kpm_report_style == 1:
                 print(f"Subscribe to E2 node ID: {e2_node_id}, RAN func: e2sm_kpm, Report Style: 1, metrics: {metric_names}")
@@ -278,91 +253,91 @@ class MyXapp(xAppBase):
                 print(f"Subscribe to E2 node ID: {e2_node_id}, RAN func: e2sm_kpm, Report Style: 2, UE_id: {current_ue_id_for_style2}, metrics: {metric_names}")
                 self.e2sm_kpm.subscribe_report_service_style_2(e2_node_id, report_period, current_ue_id_for_style2, metric_names, granul_period, subscription_callback)
             elif kpm_report_style == 3:
-                current_metrics_style3 = metric_names
+                current_metrics = metric_names
                 if len(metric_names) > 1:
-                    current_metrics_style3 = metric_names[0]
-                    print(f"INFO: For E2 Node {e2_node_id}, Style 3: only 1 metric can be requested, selected metric: {current_metrics_style3}")
+                    current_metrics = metric_names[0]
+                    print(f"INFO: For E2 Node {e2_node_id}, Style 3: only 1 metric can be requested, selected metric: {current_metrics}")
                 matchingConds = [{'matchingCondChoice': ('testCondInfo', {'testType': ('ul-rSRP', 'true'), 'testExpr': 'lessthan', 'testValue': ('valueInt', 1000)})}]
-                print(f"Subscribe to E2 node ID: {e2_node_id}, RAN func: e2sm_kpm, Report Style: 3, metrics: {[current_metrics_style3] if isinstance(current_metrics_style3, str) else current_metrics_style3}")
-                self.e2sm_kpm.subscribe_report_service_style_3(e2_node_id, report_period, matchingConds, [current_metrics_style3] if isinstance(current_metrics_style3, str) else current_metrics_style3, granul_period, subscription_callback)
+                print(f"Subscribe to E2 node ID: {e2_node_id}, RAN func: e2sm_kpm, Report Style: 3, metrics: {current_metrics}")
+                self.e2sm_kpm.subscribe_report_service_style_3(e2_node_id, report_period, matchingConds, [current_metrics] if isinstance(current_metrics, str) else current_metrics, granul_period, subscription_callback)
             elif kpm_report_style == 4:
                 matchingUeConds = [{'testCondInfo': {'testType': ('ul-rSRP', 'true'), 'testExpr': 'lessthan', 'testValue': ('valueInt', 1000)}}]
                 print(f"Subscribe to E2 node ID: {e2_node_id}, RAN func: e2sm_kpm, Report Style: 4, metrics: {metric_names}")
                 self.e2sm_kpm.subscribe_report_service_style_4(e2_node_id, report_period, matchingUeConds, metric_names, granul_period, subscription_callback)
             elif kpm_report_style == 5:
-                current_ue_ids_for_style5 = list(ue_ids_config)
+                current_ue_ids_for_style5 = list(ue_ids_config) # Make a copy
                 if len(current_ue_ids_for_style5) < 2:
-                    if not current_ue_ids_for_style5: dummyUeId1, dummyUeId2 = 1, 2; current_ue_ids_for_style5.extend([dummyUeId1, dummyUeId2])
-                    else: dummyUeId = current_ue_ids_for_style5[0] + 1; current_ue_ids_for_style5.append(dummyUeId)
-                    print(f"INFO: For E2 Node {e2_node_id}, Style 5 requires at least two UE IDs. Adjusted UE_ids: {current_ue_ids_for_style5}")
+                    if not current_ue_ids_for_style5:
+                        dummyUeId1, dummyUeId2 = 1, 2 # Arbitrary dummy IDs
+                        current_ue_ids_for_style5.extend([dummyUeId1, dummyUeId2])
+                        print(f"INFO: For E2 Node {e2_node_id}, Style 5 requires at least two UE IDs. Added dummy UeIDs: {dummyUeId1}, {dummyUeId2}")
+                    else: # one UE ID present
+                        dummyUeId = current_ue_ids_for_style5[0] + 1 # Create a second dummy
+                        current_ue_ids_for_style5.append(dummyUeId)
+                        print(f"INFO: For E2 Node {e2_node_id}, Style 5 requires at least two UE IDs. Added dummy UeID: {dummyUeId}")
                 print(f"Subscribe to E2 node ID: {e2_node_id}, RAN func: e2sm_kpm, Report Style: 5, UE_ids: {current_ue_ids_for_style5}, metrics: {metric_names}")
                 self.e2sm_kpm.subscribe_report_service_style_5(e2_node_id, report_period, current_ue_ids_for_style5, metric_names, granul_period, subscription_callback)
             else:
                 print(f"INFO: Subscription for E2SM_KPM Report Service Style {kpm_report_style} is not supported for E2 node {e2_node_id}")
 
+    # Override signal_handler to stop the aggregation thread gracefully
     def signal_handler(self, signum, frame):
-        print(f"Signal {signum} received, xApp is shutting down...")
-        self._stop_event.set() # Signal the timer thread to stop
-        if self.processing_timer:
-            self.processing_timer.cancel() # Attempt to cancel the timer
-        
-        # Call the superclass's signal_handler for its cleanup (e.g., RMR deregister)
-        # Make sure this matches how your xAppBase expects to be called
-        if hasattr(super(), 'signal_handler') and callable(super().signal_handler):
-            super().signal_handler(signum, frame)
+        print(f"Signal {signum} received, xApp shutting down...")
+        if self.aggregation_thread and self.aggregation_thread.is_alive():
+            print("Attempting to stop aggregation processor thread...")
+            self.stop_aggregation_event.set()
+            try:
+                # Put a sentinel value to unblock the queue.get if it's waiting indefinitely
+                self.data_queue_for_aggregator.put(None, block=False)
+            except queue.Full:
+                print("Warning: Aggregation queue is full, cannot add sentinel. Thread might take longer to stop.")
+                pass # Thread will stop on next timeout or stop_event check
+            
+            self.aggregation_thread.join(timeout=5) # Wait up to 5 seconds
+            if self.aggregation_thread.is_alive():
+                print("Warning: Aggregation thread did not stop in time.")
+            else:
+                print("Aggregation processor thread stopped.")
         else:
-            print("xAppBase does not have a callable signal_handler or not using Python 3 super().")
-            # Perform necessary base cleanup manually if super() doesn't work or is not Python 3 style
-            # For example, if xAppBase provides a specific shutdown method:
-            # self.shutdown_rmr() # or similar
-            sys.exit(0) # Exit if superclass doesn't handle it
+            print("Aggregation processor thread was not running or already stopped.")
+        
+        super().signal_handler(signum, frame) # Call base class handler for RMR cleanup etc.
+        print("xApp shutdown process complete.")
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='My example xApp with KPM aggregation')
+    parser = argparse.ArgumentParser(description='My example xApp')
     parser.add_argument("--config", type=str, default='', help="xApp config file path")
     parser.add_argument("--http_server_port", type=int, default=8090, help="HTTP server listen port")
     parser.add_argument("--rmr_port", type=int, default=4560, help="RMR port")
-
-    # E2 Node related arguments
     parser.add_argument("--e2_node_ids", type=str, required=True, help="Comma-separated list of E2 Node IDs (e.g., 'du1,du2')")
     parser.add_argument("--qos_classes", type=int, nargs='+', required=True, help="List of QoS classes (1-4) for each E2 Node, space-separated (e.g., 1 2)")
     parser.add_argument("--cpu_allocations", type=str, nargs='+', required=True, help="List of CPU allocations for each E2 Node, space-separated. Each allocation is a string like '0-2,5' or '3' (e.g., '0-1' '2,3')")
-
-    # TDP limits
     parser.add_argument("--tdp_min_watts", type=float, required=True, help="Minimum desired TDP limit in Watts (e.g., 100.0)")
     parser.add_argument("--tdp_max_watts", type=float, required=True, help="Maximum desired TDP limit in Watts (e.g., 150.0)")
-
-    # Subscription parameters
     parser.add_argument("--ran_func_id", type=int, default=2, help="RAN function ID (for E2SM KPM service model)")
     parser.add_argument("--kpm_report_style", type=int, default=1, choices=range(1,6), help="KPM Report Style (1-5)")
     parser.add_argument("--ue_ids", type=str, default='', help="Comma-separated list of UE IDs (relevant for styles 2, 5, e.g., '0,1')")
-    parser.add_argument("--metrics", type=str, default='DRB.UEThpDl,DRB.UEThpUl', help="Comma-separated list of Metrics names (e.g., 'Metric1,Metric2')")
-
-    # Aggregation control
-    parser.add_argument("--agg_check_interval", type=float, default=1.0, help="Interval (seconds) to check for KPM aggregation completion.")
-    parser.add_argument("--agg_grace_period", type=int, default=500, help="Grace period (milliseconds) after interval end to wait for late KPM reports.")
+    parser.add_argument("--metrics", type=str, default='DRB.UEThpUl,DRB.UEThpDl', help="Comma-separated list of Metrics names (e.g., 'Metric1,Metric2')")
 
     args = parser.parse_args()
 
-    # Validate TDP limits
-    if args.tdp_min_watts < 0 or args.tdp_max_watts < 0:
-        print(f"Error: TDP limits must be non-negative.")
-        sys.exit(1)
     if args.tdp_min_watts > args.tdp_max_watts:
         print(f"Error: TDP min watts ({args.tdp_min_watts}) cannot be greater than TDP max watts ({args.tdp_max_watts}).")
         sys.exit(1)
+    if args.tdp_min_watts < 0 or args.tdp_max_watts < 0:
+        print(f"Error: TDP limits must be non-negative.")
+        sys.exit(1)
 
-    # Parse and validate E2 Node specific configurations
     e2_node_ids_list = [node_id.strip() for node_id in args.e2_node_ids.split(",") if node_id.strip()]
     qos_classes_list = args.qos_classes
     cpu_allocations_str_list = args.cpu_allocations
 
     if not (len(e2_node_ids_list) == len(qos_classes_list) == len(cpu_allocations_str_list)):
         print("Error: The number of e2_node_ids, qos_classes, and cpu_allocations must match.")
-        print(f"  E2 Node IDs ({len(e2_node_ids_list)}): {e2_node_ids_list}")
-        print(f"  QoS Classes ({len(qos_classes_list)}): {qos_classes_list}")
-        print(f"  CPU Allocations ({len(cpu_allocations_str_list)}): {cpu_allocations_str_list}")
+        print(f"  E2 Node IDs count: {len(e2_node_ids_list)}")
+        print(f"  QoS Classes count: {len(qos_classes_list)}")
+        print(f"  CPU Allocations count: {len(cpu_allocations_str_list)}")
         sys.exit(1)
 
     e2_node_configurations = []
@@ -370,80 +345,80 @@ if __name__ == '__main__':
         node_id = e2_node_ids_list[i]
         qos = qos_classes_list[i]
         cpu_str = cpu_allocations_str_list[i]
-
         if not (1 <= qos <= 4):
             print(f"Error: QoS class for E2 Node '{node_id}' must be between 1 and 4, got {qos}.")
             sys.exit(1)
-
         parsed_cpus = parse_cpu_allocation(cpu_str)
-        if parsed_cpus is None: # parse_cpu_allocation prints its own error
+        if parsed_cpus is None: # parse_cpu_allocation returns None on error
+            print(f"Error: Invalid CPU allocation format '{cpu_str}' for E2 Node '{node_id}'. Exiting.")
             sys.exit(1)
-        
         e2_node_configurations.append({'id': node_id, 'qos': qos, 'cpus': parsed_cpus})
 
     if not e2_node_configurations:
         print("Error: No E2 Node configurations provided or parsed successfully.")
         sys.exit(1)
 
-    config_path = args.config # Renamed for clarity
+    config = args.config
     ran_func_id = args.ran_func_id
     ue_ids_list = list(map(int, args.ue_ids.split(","))) if args.ue_ids.strip() else []
     kpm_report_style = args.kpm_report_style
     metrics_list = [metric.strip() for metric in args.metrics.split(",") if metric.strip()]
-    
-    # Ensure required metrics for aggregation are present if style 1 or 2
-    if kpm_report_style in [1, 2]:
-        required_metrics_for_agg = {"DRB.UEThpDl", "DRB.UEThpUl"}
-        if not required_metrics_for_agg.issubset(set(metrics_list)):
-            print(f"Warning: For KPM aggregation with style {kpm_report_style}, metrics {list(required_metrics_for_agg)} are expected.")
-            print(f"         Current metrics: {metrics_list}. Aggregation for these specific throughputs might not work as intended.")
-            # You might want to automatically add them:
-            # for m_req in required_metrics_for_agg:
-            #     if m_req not in metrics_list:
-            #         metrics_list.append(m_req)
-            # print(f"         Adjusted metrics list to include required for aggregation: {metrics_list}")
 
+    myXapp = MyXapp(config, args.http_server_port, args.rmr_port, args.tdp_min_watts, args.tdp_max_watts)
+    # Assuming self.e2sm_kpm is initialized by xAppBase or its superclass.
+    # If not, you would need to do: from e2sm_kpm_module import e2sm_kpm_module
+    # and then in MyXapp.__init__: self.e2sm_kpm = e2sm_kpm_module(self)
+    # Your provided e2sm_kpm_module suggests it's an attribute of the xApp.
+    if not hasattr(myXapp, 'e2sm_kpm'):
+        print("CRITICAL: myXapp.e2sm_kpm is not initialized. Please ensure e2sm_kpm_module is correctly integrated.")
+        # from e2sm_kpm_module import e2sm_kpm_module # You would need this file in the path
+        # myXapp.e2sm_kpm = e2sm_kpm_module(myXapp)
+        # For now, assuming it's there from the base class or similar mechanism.
+        # If the script fails here, this is the likely cause.
+        # sys.exit(1) # This would be safer if you know it should be there
+        pass # Proceeding with caution
 
-    # Create MyXapp instance
-    myXapp = MyXapp(config_path, args.http_server_port, args.rmr_port, 
-                    args.tdp_min_watts, args.tdp_max_watts,
-                    args.agg_check_interval, args.agg_grace_period)
-    
-    # This assumes e2sm_kpm is an attribute initialized by xAppBase or MyXapp's super().__init__
     if hasattr(myXapp, 'e2sm_kpm') and myXapp.e2sm_kpm is not None:
-        myXapp.e2sm_kpm.set_ran_func_id(ran_func_id)
+         myXapp.e2sm_kpm.set_ran_func_id(ran_func_id)
     else:
-        print("Warning: myXapp.e2sm_kpm is not available. Cannot set RAN function ID.")
-        # This might be an issue if e2sm_kpm is not initialized by the base class as expected
+        print("Warning: e2sm_kpm module not available on myXapp object, cannot set RAN func ID.")
 
-    # Connect exit signals
+
+    # Connect exit signals. The overridden signal_handler in MyXapp will be called.
     signal.signal(signal.SIGQUIT, myXapp.signal_handler)
     signal.signal(signal.SIGTERM, myXapp.signal_handler)
     signal.signal(signal.SIGINT, myXapp.signal_handler)
 
     print(f"\nStarting xApp with the following E2 Node configurations:")
-    for cfg_item in e2_node_configurations:
-        print(f"  - ID: {cfg_item['id']}, QoS: {cfg_item['qos']}, CPUs: {cfg_item['cpus']}")
-    print(f"Global KPM Style: {kpm_report_style}, Metrics: {metrics_list}, UE IDs (for relevant styles): {ue_ids_list}")
-    print(f"Aggregation Check Interval: {args.agg_check_interval}s, Grace Period: {args.agg_grace_period}ms")
+    for cfg_node in e2_node_configurations:
+        print(f"  - ID: {cfg_node['id']}, QoS: {cfg_node['qos']}, CPUs: {cfg_node['cpus']}")
+    print(f"Global KPM Style: {kpm_report_style}, Metrics: {metrics_list}, UE IDs (for relevant styles): {ue_ids_list if ue_ids_list else 'N/A'}")
     
-    # Start xApp's main logic (which includes starting RMR listeners etc. via decorator)
-    myXapp.start(e2_node_configurations, kpm_report_style, ue_ids_list, metrics_list)
-    
-    # Keep the main thread alive for daemon threads (like the timer)
     try:
-        while not myXapp._stop_event.is_set():
-            time.sleep(1) # Keep main thread responsive to signals
+        myXapp.start(e2_node_configurations, kpm_report_style, ue_ids_list, metrics_list)
+        # The start method is decorated with @xAppBase.start_function,
+        # which likely means it starts a blocking loop.
+        # If it's non-blocking, you might need a time.sleep() loop here to keep main alive.
+        # Based on typical xAppBase design, it's probably blocking.
+        while not myXapp.is_terminated(): # Assuming xAppBase has an is_terminated method
+            time.sleep(1) # Keep main thread alive while xApp runs
+
     except KeyboardInterrupt:
-        print("\nMain thread: KeyboardInterrupt received, initiating shutdown via signal handler.")
-        # The signal handler should already be triggered by Ctrl+C.
-        # If it wasn't (e.g. some specific terminal issue), this ensures cleanup.
-        if not myXapp._stop_event.is_set():
-            myXapp.signal_handler(signal.SIGINT, None) 
+        print("\nKeyboard interrupt received in main, initiating shutdown...")
+        if not myXapp.is_terminated():
+            myXapp.signal_handler(signal.SIGINT, None) # Manually trigger shutdown sequence
+    except Exception as e_main:
+        print(f"Main execution error: {e_main}")
+        import traceback
+        traceback.print_exc()
+        if not myXapp.is_terminated():
+            myXapp.signal_handler(signal.SIGTERM, None) # Attempt graceful shutdown
     finally:
-        # Wait for the timer thread to finish if it's joinable and not a daemon,
-        # or just ensure _stop_event is set.
-        if myXapp.processing_timer and myXapp.processing_timer.is_alive():
-            print("Main thread: Waiting for processing timer to complete...")
-            # myXapp.processing_timer.join(timeout=2) # Optional: wait for timer to finish its current run
-        print("xApp main loop finished or xApp shutting down.")
+        print("xApp main execution loop finished or xApp terminated.")
+        # Ensure aggregation thread is stopped if somehow still running
+        if myXapp.aggregation_thread and myXapp.aggregation_thread.is_alive():
+            print("Final check: ensuring aggregation thread is stopped.")
+            myXapp.stop_aggregation_event.set()
+            try: myXapp.data_queue_for_aggregator.put(None, block=False)
+            except queue.Full: pass
+            myXapp.aggregation_thread.join(timeout=2)
