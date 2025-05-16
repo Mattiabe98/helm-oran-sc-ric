@@ -52,7 +52,7 @@ class xAppBase(object):
         while rmr.rmr_ready(self.rmr_client) == 0:
             time.sleep(1)
 
-        rmr.rmr_set_stimeout(self.rmr_client, 1)
+        rmr.rmr_set_stimeout(self.rmr_client, 100)
         self.rmr_sbuf = rmr.rmr_alloc_msg(self.rmr_client, 2000)
         time.sleep(0.1)
 
@@ -149,7 +149,7 @@ class xAppBase(object):
     def _run(self):
         while self.running:
             try:
-                sbuf = rmr.rmr_torcv_msg(self.rmr_client, None, 100)
+                sbuf = rmr.rmr_torcv_msg(self.rmr_client, None, 500)
                 summary = rmr.message_summary(sbuf)
             except Exception as e:
                 continue
