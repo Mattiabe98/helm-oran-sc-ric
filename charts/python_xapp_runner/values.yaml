@@ -24,7 +24,7 @@ volumeMounts:
     subPath: routes.rtg
   - name: script-volume
     mountPath: /opt/xApps/files/
-  - name: script-volume
+  - name: script-lib
     mountPath: /opt/xApps/files/lib/
   - mountPath: /mnt/data  # Mount path inside the container
     name: storage
