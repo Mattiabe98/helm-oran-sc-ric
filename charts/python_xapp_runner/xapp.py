@@ -143,9 +143,9 @@ class MyXapp(xAppBase):
         # --- End Detailed Logging ---
 
 
-        perform_aggregation = False
-        if kpm_report_style == 1 and self.TARGET_METRICS_FOR_AGGREGATION.issubset(set(self.subscribed_metrics_for_agg)):
-            perform_aggregation = True
+        perform_aggregation = True
+        # if kpm_report_style == 1 and self.TARGET_METRICS_FOR_AGGREGATION.issubset(set(self.subscribed_metrics_for_agg)):
+        #     perform_aggregation = True
 
         if perform_aggregation:
             collet_start_time_dt = indication_hdr_extracted.get('colletStartTime')
