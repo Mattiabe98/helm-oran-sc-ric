@@ -22,6 +22,7 @@ def _pack_meas_info_list(self, metric_names):
         metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
 
         for metric_name_str in metric_names:
+            print(metric_name_str)
             label_info_list_for_this_metric = [] # This will be the value for 'labelInfoList' key
 
             if metric_name_str in metrics_requiring_slice_id_label:
