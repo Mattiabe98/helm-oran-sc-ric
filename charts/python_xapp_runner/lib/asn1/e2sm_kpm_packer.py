@@ -35,20 +35,52 @@ class e2sm_kpm_packer(object):
         matchingUeCondList = matchingUeConds
         return matchingUeCondList
 
-    def pack_action_def_format1(self, metric_names, granulPeriod=100):
-        if not isinstance(metric_names, list):
-            metric_names = [metric_names]
+      
+    def _pack_meas_info_list(self, metric_names):
+        # This method would be part of your e2sm_kpm_compiler.py or a similar packing utility
+        measInfoList_asn1_struct = [] # This list will hold the dicts for each MeasurementInfoItem
 
-        measInfoList = self._pack_meas_info_list(metric_names)
+        metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
 
-        action_def = {'ric-Style-Type': 1,
-                      'actionDefinition-formats': ('actionDefinition-Format1', {
-                          'measInfoList': measInfoList, 
-                          'granulPeriod': granulPeriod
-                          })
-                     }
-        action_def = self.asn1_compiler.encode('E2SM-KPM-ActionDefinition', action_def)
-        return action_def
+        for metric_name_str in metric_names:
+            label_info_list_for_this_metric = [] # This will be the value for 'labelInfoList' key
+
+            if metric_name_str in metrics_requiring_slice_id_label:
+                # Construct LabelInfoList for DRB.AirIfDelayDist with SliceID
+                # 1. Create the S-NSSAI structure
+                s_nssai_struct = {'sST': b'\x01'}
+                # Optionally add sD if needed:
+                # s_nssai_struct['sD'] = b'\x00\x00\x00' 
+
+                # 2. Create the MeasurementLabel structure containing the S-NSSAI
+                measurement_label_struct = {'sliceID': s_nssai_struct}
+                
+                # 3. Create the LabelInfoItem structure containing the MeasurementLabel
+                label_info_item_struct = {'measLabel': measurement_label_struct}
+                
+                # 4. Add this LabelInfoItem to the list for this metric
+                label_info_list_for_this_metric.append(label_info_item_struct)
+                
+            else: # For other metrics like DRB.UEThpDl, DRB.UEThpUl
+                # Use noLabel = true (assuming this has been working for them)
+                measurement_label_struct = {'noLabel': 'true'} # Assuming ENUMERATED 'true'
+                label_info_item_struct = {'measLabel': measurement_label_struct}
+                label_info_list_for_this_metric.append(label_info_item_struct)
+            
+            # Construct the MeasurementInfoItem for the current metric
+            # Remember measType is a CHOICE, often represented as a tuple
+            # ('chosenFieldName', value_for_that_field)
+            metric_def_asn1_struct = {
+                'measType': ('measName', metric_name_str), 
+                'labelInfoList': label_info_list_for_this_metric
+                # 'matchCondReportList' is OPTIONAL and omitted here
+            }
+            
+            measInfoList_asn1_struct.append(metric_def_asn1_struct)
+            
+        return measInfoList_asn1_struct # This is the list ready to be part of ActionDefinition-Format1
+
+    
 
     def pack_action_def_format2(self, ue_id, metric_names, granulPeriod=100):
         if not isinstance(metric_names, list):
