@@ -8,8 +8,3 @@ data:
   {{ . }}: |-
 {{ $files.Get . | trim | indent 4 }}
   {{- end }}
-  {{- $root := . }}
-  {{- range $f, $_ := .Files.Glob "lib/*" }}
-    {{ base $f }}: |-
-  {{ tpl ($root.Files.Get $f) $root | indent 4 }}
-  {{- end }}
