@@ -52,10 +52,10 @@ class e2sm_kpm_packer(object):
         }
         
         try:
-            encoded_bytes1 = self.e2sm_kpm_compiler.asn1_packer.encode('S-NSSAI', snssai_data_explicit_no_sd)
+            encoded_bytes1 = self.asn1_compiler.encode('S-NSSAI', snssai_data_explicit_no_sd)
             print(f"Encoded S-NSSAI (explicit no SD): {list(encoded_bytes1)}") # Print as list of ints
         
-            encoded_bytes2 = self.e2sm_kpm_compiler.asn1_packer.encode('S-NSSAI', snssai_data_sst_only)
+            encoded_bytes2 = self.asn1_compiler.encode('S-NSSAI', snssai_data_sst_only)
             print(f"Encoded S-NSSAI (SST only): {list(encoded_bytes2)}")
         
         except Exception as e:
