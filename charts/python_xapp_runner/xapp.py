@@ -166,6 +166,9 @@ class MyXapp(xAppBase):
                         try: current_ul = float(ul_values[0])
                         except (ValueError, TypeError):
                              self.logger.warning(f"Aggregation: Could not convert DRB.UEThpUl value '{ul_values[0]}' to float for DU {e2_agent_id} at {collet_start_time_dt}")
+                    delay_values = meas_data["measData"].get("DRB.AirIfDelayDist")
+                    if delay_values and len(delay_values) > 0:
+                        print(delay_values)
                 else:
                     self.logger.warning(f"Aggregation: 'measData' not found in KPM Style 1 report from DU {e2_agent_id} at {collet_start_time_dt}")
                 
@@ -284,7 +287,7 @@ if __name__ == '__main__':
     parser.add_argument("--ran_func_id", type=int, default=2, help="RAN function ID")
     parser.add_argument("--kpm_report_style", type=int, default=1, choices=range(1,6), help="KPM Report Style (1-5)")
     parser.add_argument("--ue_ids", type=str, default='', help="Comma-separated list of UE IDs")
-    parser.add_argument("--metrics", type=str, default='DRB.UEThpDl,DRB.UEThpUl', help="Comma-separated list of Metrics names")
+    parser.add_argument("--metrics", type=str, default='DRB.UEThpDl,DRB.UEThpUl,DRB.AirIfDelayDist', help="Comma-separated list of Metrics names")
     parser.add_argument("--log_level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Logging level")
 
 
