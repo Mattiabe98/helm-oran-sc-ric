@@ -13,11 +13,59 @@ class e2sm_kpm_packer(object):
         e2sm_kpm_trigger_def = self.asn1_compiler.encode('E2SM-KPM-EventTriggerDefinition', e2sm_kpm_trigger_def)
         return e2sm_kpm_trigger_def
 
+    
     def _pack_meas_info_list(self, metric_names):
         measInfoList = []
-        # TODO: pack also labels
+        
+        # Define metrics that should NOT use noLabel=true and might expect implicit labeling
+        # or for which we want all available labels from the E2 Node.
+        # For DRB.AirIfDelayDist, we want the E2 node to send us all its labeled breakdowns.
+        # Sending an empty labelInfoList or omitting it often means "all applicable labels".
+        # Let's try omitting it first, or an empty list. Consult ASN.1 for MeasurementInfo-Item.
+        # If LabelInfoList is OPTIONAL in MeasurementInfo-Item, we can omit it.
+        # If it's a SEQUENCE OF and can be empty, we send an empty list [].
+        
+        # Assuming LabelInfoList is OPTIONAL in MeasurementInfo-Item as per common KPM designs
+        # for "report all labels" for a given metric.
+        # Or, if it must be present but can be an empty list:
+        # label_info_for_distribution = [] 
+        
+        metrics_requiring_detailed_labels = {"DRB.AirIfDelayDist"} # Add other similar metrics here
+
         for metric_name in metric_names:
-            metric_def = {'measType': ('measName', metric_name), 'labelInfoList': [{'measLabel': {'noLabel': 'true'}}]}
+            if metric_name in metrics_requiring_detailed_labels:
+                # For DRB.AirIfDelayDist, we want the E2 node to decide which labels to send
+                # based on its configuration and available data (e.g., all 5QIs, S-NSSAIs it has data for).
+                # Option 1: Omit labelInfoList if it's OPTIONAL in ASN.1
+                metric_def = {'measType': ('measName', metric_name)} 
+                # Option 2: Send an empty labelInfoList if it must be present but can be empty
+                # metric_def = {'measType': ('measName', metric_name), 'labelInfoList': []}
+                
+                # You need to check your e2sm-kpm-v4.00.asn:
+                # Find "MeasurementInfo-Item ::= SEQUENCE"
+                # See if "labelInfoList LabelInfoList OPTIONAL"
+                # Or if "labelInfoList SEQUENCE (SIZE(1..maxnoofLabelInfo)) OF LabelInfo-Item OPTIONAL"
+                # If the SEQUENCE OF itself is OPTIONAL, you can omit.
+                # If the SEQUENCE OF must exist but can be empty, use labelInfoList: [].
+                # Let's assume for now it's OPTIONAL or an empty list works:
+                # For srsRAN's definition (DIST_BIN_X | PLMN_ID | FIVE_QI | SLICE_ID),
+                # we definitely don't want noLabel=true.
+                # By not specifying any labels in the subscription request for this metric,
+                # we are asking the E2 Node to provide the metric broken down by all
+                # labels it supports and has data for.
+                # The DIST_BIN_X_LABEL is more about how the *value* is structured (a distribution)
+                # rather than a label you filter on in the subscription in the same way as 5QI/SliceID.
+                
+                # A common approach for "give me all labels" is to omit LabelInfoList or send it empty.
+                # Let's try omitting it first for DRB.AirIfDelayDist.
+                # If the ASN1 compiler complains that labelInfoList is mandatory, then try labelInfoList: [].
+                metric_def = {'measType': ('measName', metric_name)} # Try omitting labelInfoList
+                                
+            else:
+                # For other metrics, keep the existing noLabel=true if that's desired/works
+                metric_def = {'measType': ('measName', metric_name), 
+                              'labelInfoList': [{'measLabel': {'noLabel': 'true'}}]}
+            
             measInfoList.append(metric_def)
         return measInfoList
 
