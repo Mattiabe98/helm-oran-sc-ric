@@ -44,8 +44,7 @@ spec:
             - mkdir /tmp/xApp;
               cp -RL /opt/xApps/files/* /tmp/xApp/;
               cp -RL /opt/xApps/files/lib /tmp/xApp/;
-              sleep infinity;
-              # exec python3 -u /tmp/xApp/xapp.py --e2_node_ids gnbd_999_091_00019b_0,gnbd_999_092_00019b_1,gnbd_999_093_00019b_2,gnbd_999_094_00019b_3,gnbd_999_095_00019b_4,gnbd_999_096_00019b_5 --qos_classes 1 2 4 1 3 4  --cpu_allocations '8-11' '12-15' '16-19' '20-23' '24-27' '28-31' --tdp_min_watts 100 --tdp_max_watts 150;
+              exec python3 -u /tmp/xApp/xapp.py --e2_node_ids gnbd_999_091_00019b_0,gnbd_999_092_00019b_1,gnbd_999_093_00019b_2,gnbd_999_094_00019b_3,gnbd_999_095_00019b_4,gnbd_999_096_00019b_5 --qos_classes 1 2 4 1 3 4  --cpu_allocations '8-11' '12-15' '16-19' '20-23' '24-27' '28-31' --tdp_min_watts 100 --tdp_max_watts 150;
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
