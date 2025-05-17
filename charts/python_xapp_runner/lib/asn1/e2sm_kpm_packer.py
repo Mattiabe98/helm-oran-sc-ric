@@ -41,10 +41,27 @@ class e2sm_kpm_packer(object):
         measInfoList_asn1_struct = [] # This list will hold the dicts for each MeasurementInfoItem
 
         metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
-
+        
+        snssai_data_explicit_no_sd = {
+            'sST': b'\x01',
+            'sD': b'\xff\xff\xff'
+        }
+        snssai_data_sst_only = {
+            'sST': b'\x01'
+            # sD is omitted
+        }
+        
+        try:
+            encoded_bytes1 = self.e2sm_kpm_compiler.asn1_packer.encode('S-NSSAI', snssai_data_explicit_no_sd)
+            print(f"Encoded S-NSSAI (explicit no SD): {list(encoded_bytes1)}") # Print as list of ints
+        
+            encoded_bytes2 = self.e2sm_kpm_compiler.asn1_packer.encode('S-NSSAI', snssai_data_sst_only)
+            print(f"Encoded S-NSSAI (SST only): {list(encoded_bytes2)}")
+        
+        except Exception as e:
+            print(f"Error encoding S-NSSAI directly: {e}")
+        
         for metric_name_str in metric_names:
-            print("HERE COMES THE METRIC NAME STR!!!!")
-            print(metric_name_str)
             label_info_list_for_this_metric = [] # This will be the value for 'labelInfoList' key
 
             if metric_name_str in metrics_requiring_slice_id_label:
