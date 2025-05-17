@@ -188,18 +188,14 @@ class MyXapp(xAppBase):
                         # Log aggregated results to INFO, which will go to file and potentially console
                         agg_msg_header = f"AGGREGATED TOTALS for ColletStartTime: {collet_start_time_dt.strftime('%Y-%m-%d %H:%M:%S')}"
                         self.logger.info(agg_msg_header)
-                        print(f"\n--- {agg_msg_header} ---") # Keep this print for immediate visibility
 
                         overall_dl_msg = f"Overall Total DRB.UEThpDl: {agg_window['total_dl_throughput']:.2f}"
                         overall_ul_msg = f"Overall Total DRB.UEThpUl: {agg_window['total_ul_throughput']:.2f}"
                         self.logger.info(overall_dl_msg)
                         self.logger.info(overall_ul_msg)
-                        print(f"  {overall_dl_msg}")
-                        print(f"  {overall_ul_msg}")
                         
                         qos_header_msg = "Per QoS Class Totals:"
                         self.logger.info(f"  --- {qos_header_msg} ---")
-                        print(f"  --- {qos_header_msg} ---")
 
                         all_qos_classes_in_window = sorted(list(set(agg_window["qos_dl_throughput"].keys()) | set(agg_window["qos_ul_throughput"].keys())))
                         
@@ -208,13 +204,9 @@ class MyXapp(xAppBase):
                             qos_ul = agg_window["qos_ul_throughput"].get(qos, 0.0)
                             qos_class_msg = f"QoS Class {qos}: DL={qos_dl:.2f}, UL={qos_ul:.2f}"
                             self.logger.info(f"    {qos_class_msg}")
-                            print(f"    {qos_class_msg}")
                         
                         reported_dus_msg = f"Reported from DUs: {sorted(list(agg_window['reported_nodes']))}"
                         self.logger.info(f"  {reported_dus_msg}")
-                        print(f"  {reported_dus_msg}")
-                        print(f"------------------------------------------------------------------")
-
                         del self.aggregation_windows[collet_start_time_dt]
             else:
                 if kpm_report_style == 1:
