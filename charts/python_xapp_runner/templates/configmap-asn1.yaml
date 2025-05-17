@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: xapp-lib
+  name: xapp-asn1
 data:
 {{- $root := . }}
 {{- range $f, $_ := .Files.Glob "lib/asn1/*" }}
