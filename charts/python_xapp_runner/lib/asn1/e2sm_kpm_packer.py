@@ -50,17 +50,13 @@ class e2sm_kpm_packer(object):
             if metric_name_str in metrics_requiring_slice_id_label:
                 # Construct LabelInfoList for DRB.AirIfDelayDist with SliceID
                 # 1. Create the S-NSSAI structure
-                s_nssai_struct = {'sST': b'\x01'}
-                # Optionally add sD if needed:
-                # s_nssai_struct['sD'] = b'\x00\x00\x00' 
-
-                # 2. Create the MeasurementLabel structure containing the S-NSSAI
+                # In _pack_meas_info_list, for DRB.AirIfDelayDist:
+                s_nssai_struct = {
+                    'sST': b'\x01',
+                    'sD': b'\xff\xff\xff'  # Explicitly no specific SD
+                }
                 measurement_label_struct = {'sliceID': s_nssai_struct}
-                
-                # 3. Create the LabelInfoItem structure containing the MeasurementLabel
                 label_info_item_struct = {'measLabel': measurement_label_struct}
-                
-                # 4. Add this LabelInfoItem to the list for this metric
                 label_info_list_for_this_metric.append(label_info_item_struct)
                 
             else: # For other metrics like DRB.UEThpDl, DRB.UEThpUl
