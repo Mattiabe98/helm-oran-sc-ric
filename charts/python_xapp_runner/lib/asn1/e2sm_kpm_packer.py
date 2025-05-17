@@ -43,6 +43,7 @@ class e2sm_kpm_packer(object):
         metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
 
         for metric_name_str in metric_names:
+            print("HERE COMES THE METRIC NAME STR!!!!")
             print(metric_name_str)
             label_info_list_for_this_metric = [] # This will be the value for 'labelInfoList' key
 
