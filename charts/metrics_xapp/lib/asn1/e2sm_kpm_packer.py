@@ -14,60 +14,50 @@ class e2sm_kpm_packer(object):
         return e2sm_kpm_trigger_def
 
     
-    def _pack_meas_info_list(self, metric_names):
-        measInfoList = []
-        
-        # Define metrics that should NOT use noLabel=true and might expect implicit labeling
-        # or for which we want all available labels from the E2 Node.
-        # For DRB.AirIfDelayDist, we want the E2 node to send us all its labeled breakdowns.
-        # Sending an empty labelInfoList or omitting it often means "all applicable labels".
-        # Let's try omitting it first, or an empty list. Consult ASN.1 for MeasurementInfo-Item.
-        # If LabelInfoList is OPTIONAL in MeasurementInfo-Item, we can omit it.
-        # If it's a SEQUENCE OF and can be empty, we send an empty list [].
-        
-        # Assuming LabelInfoList is OPTIONAL in MeasurementInfo-Item as per common KPM designs
-        # for "report all labels" for a given metric.
-        # Or, if it must be present but can be an empty list:
-        # label_info_for_distribution = [] 
-        
-        metrics_requiring_detailed_labels = {"DRB.AirIfDelayDist"} # Add other similar metrics here
+      
+def _pack_meas_info_list(self, metric_names):
+        # This method would be part of your e2sm_kpm_compiler.py or a similar packing utility
+        measInfoList_asn1_struct = [] # This list will hold the dicts for each MeasurementInfoItem
 
-        for metric_name in metric_names:
-            if metric_name in metrics_requiring_detailed_labels:
-                # For DRB.AirIfDelayDist, we want the E2 node to decide which labels to send
-                # based on its configuration and available data (e.g., all 5QIs, S-NSSAIs it has data for).
-                # Option 1: Omit labelInfoList if it's OPTIONAL in ASN.1
-                metric_def = {'measType': ('measName', metric_name)} 
-                # Option 2: Send an empty labelInfoList if it must be present but can be empty
-                # metric_def = {'measType': ('measName', metric_name), 'labelInfoList': []}
+        metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
+
+        for metric_name_str in metric_names:
+            label_info_list_for_this_metric = [] # This will be the value for 'labelInfoList' key
+
+            if metric_name_str in metrics_requiring_slice_id_label:
+                # Construct LabelInfoList for DRB.AirIfDelayDist with SliceID
+                # 1. Create the S-NSSAI structure
+                s_nssai_struct = {'sST': b'\x01'}
+                # Optionally add sD if needed:
+                # s_nssai_struct['sD'] = b'\x00\x00\x00' 
+
+                # 2. Create the MeasurementLabel structure containing the S-NSSAI
+                measurement_label_struct = {'sliceID': s_nssai_struct}
                 
-                # You need to check your e2sm-kpm-v4.00.asn:
-                # Find "MeasurementInfo-Item ::= SEQUENCE"
-                # See if "labelInfoList LabelInfoList OPTIONAL"
-                # Or if "labelInfoList SEQUENCE (SIZE(1..maxnoofLabelInfo)) OF LabelInfo-Item OPTIONAL"
-                # If the SEQUENCE OF itself is OPTIONAL, you can omit.
-                # If the SEQUENCE OF must exist but can be empty, use labelInfoList: [].
-                # Let's assume for now it's OPTIONAL or an empty list works:
-                # For srsRAN's definition (DIST_BIN_X | PLMN_ID | FIVE_QI | SLICE_ID),
-                # we definitely don't want noLabel=true.
-                # By not specifying any labels in the subscription request for this metric,
-                # we are asking the E2 Node to provide the metric broken down by all
-                # labels it supports and has data for.
-                # The DIST_BIN_X_LABEL is more about how the *value* is structured (a distribution)
-                # rather than a label you filter on in the subscription in the same way as 5QI/SliceID.
+                # 3. Create the LabelInfoItem structure containing the MeasurementLabel
+                label_info_item_struct = {'measLabel': measurement_label_struct}
                 
-                # A common approach for "give me all labels" is to omit LabelInfoList or send it empty.
-                # Let's try omitting it first for DRB.AirIfDelayDist.
-                # If the ASN1 compiler complains that labelInfoList is mandatory, then try labelInfoList: [].
-                metric_def = {'measType': ('measName', metric_name)} # Try omitting labelInfoList
-                                
-            else:
-                # For other metrics, keep the existing noLabel=true if that's desired/works
-                metric_def = {'measType': ('measName', metric_name), 
-                              'labelInfoList': [{'measLabel': {'noLabel': 'true'}}]}
+                # 4. Add this LabelInfoItem to the list for this metric
+                label_info_list_for_this_metric.append(label_info_item_struct)
+                
+            else: # For other metrics like DRB.UEThpDl, DRB.UEThpUl
+                # Use noLabel = true (assuming this has been working for them)
+                measurement_label_struct = {'noLabel': 'true'} # Assuming ENUMERATED 'true'
+                label_info_item_struct = {'measLabel': measurement_label_struct}
+                label_info_list_for_this_metric.append(label_info_item_struct)
             
-            measInfoList.append(metric_def)
-        return measInfoList
+            # Construct the MeasurementInfoItem for the current metric
+            # Remember measType is a CHOICE, often represented as a tuple
+            # ('chosenFieldName', value_for_that_field)
+            metric_def_asn1_struct = {
+                'measType': ('measName', metric_name_str), 
+                'labelInfoList': label_info_list_for_this_metric
+                # 'matchCondReportList' is OPTIONAL and omitted here
+            }
+            
+            measInfoList_asn1_struct.append(metric_def_asn1_struct)
+            
+        return measInfoList_asn1_struct # This is the list ready to be part of ActionDefinition-Format1
 
     def _pack_ue_id_list(self, ue_ids):
         matchingUEidList = []
