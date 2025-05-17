@@ -83,7 +83,21 @@ class e2sm_kpm_packer(object):
         return measInfoList_asn1_struct # This is the list ready to be part of ActionDefinition-Format1
 
     
+    def pack_action_def_format1(self, metric_names, granulPeriod=100):
+        if not isinstance(metric_names, list):
+            metric_names = [metric_names]
 
+        measInfoList = self._pack_meas_info_list(metric_names)
+
+        action_def = {'ric-Style-Type': 1,
+                      'actionDefinition-formats': ('actionDefinition-Format1', {
+                          'measInfoList': measInfoList, 
+                          'granulPeriod': granulPeriod
+                          })
+                     }
+        action_def = self.asn1_compiler.encode('E2SM-KPM-ActionDefinition', action_def)
+        return action_def
+    
     def pack_action_def_format2(self, ue_id, metric_names, granulPeriod=100):
         if not isinstance(metric_names, list):
             metric_names = [metric_names]
