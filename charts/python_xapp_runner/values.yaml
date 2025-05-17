@@ -26,6 +26,8 @@ volumeMounts:
     mountPath: /opt/xApps/files/
   - name: script-lib
     mountPath: /opt/xApps/files/lib/
+  - name: script-asn1
+    mountPath: /opt/xApps/files/lib/asn1/
   - mountPath: /mnt/data  # Mount path inside the container
     name: storage
 
@@ -39,6 +41,9 @@ volumes:
   - name: script-lib
     configMap:
       name: xapp-lib
+  - name: script-asn1
+    configMap:
+      name: xapp-asn1
   - name: storage
     persistentVolumeClaim:
       claimName: local-pvc  # This should match your PVC name
