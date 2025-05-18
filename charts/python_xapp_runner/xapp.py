@@ -260,9 +260,6 @@ class MyXapp(xAppBase):
             if stat_metric not in self.all_subscribed_metrics:
                 self.logger.warning(f"Statistical metric '{stat_metric}' is not in the subscribed list. Stats for it will not be calculated.")
         
-        if "DRB.AirIfDelayDist" in self.all_subscribed_metrics:
-            self.logger.info("DRB.AirIfDelayDist is subscribed, raw values logged at DEBUG if enabled.")
-
 
         for node_config in e2_node_configurations:
             e2_node_id = node_config['id']
@@ -308,7 +305,7 @@ if __name__ == '__main__':
     parser.add_argument("--kpm_report_style", type=int, default=1, choices=range(1,6), help="KPM Report Style (1-5)")
     parser.add_argument("--ue_ids", type=str, default='', help="Comma-separated list of UE IDs")
     parser.add_argument("--metrics", type=str, 
-                        default='DRB.UEThpDl,DRB.UEThpUl,DRB.AirIfDelayDist,DRB.RlcSduDelayDl,DRB.AirIfDelayUl,DRB.RlcDelayUl,DRB.RlcPacketDropRateDl', 
+                        default='DRB.UEThpDl,DRB.UEThpUl,DRB.RlcSduDelayDl,DRB.AirIfDelayUl,DRB.RlcDelayUl,DRB.RlcPacketDropRateDl', 
                         help="Comma-separated list of Metrics names")
     parser.add_argument("--log_level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Logging level")
 
