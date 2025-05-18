@@ -42,24 +42,40 @@ class e2sm_kpm_packer(object):
 
         metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
         
-        import pprint
+        snssai_data_sst_only = {'sST': b'\x01'}
+        encoded_sst_only = self.asn1_compiler.encode('S-NSSAI', snssai_data_sst_only)
+        print(f"Input SST_ONLY: {snssai_data_sst_only}")
+        print(f"Encoded SST_ONLY: {list(encoded_sst_only)} -> {encoded_sst_only}")
+        try:
+            decoded_sst_only = self.asn1_compiler.decode('S-NSSAI', encoded_sst_only)
+            print(f"Decoded SST_ONLY: {decoded_sst_only}")
+        except Exception as e:
+            print(f"Error decoding SST_ONLY: {e}")
+        print("-" * 20)
         
-        def dump_encoded_bytes(label, data):
-            encoded = self.asn1_compiler.encode('S-NSSAI', data)
-            print(f"{label}: {list(encoded)}")
-            return encoded
+        # Test 2: SST=b'\x01', sD present
+        snssai_data_explicit_no_sd = {'sST': b'\x01', 'sD': b'\xff\xff\xff'}
+        encoded_explicit = self.asn1_compiler.encode('S-NSSAI', snssai_data_explicit_no_sd)
+        print(f"Input EXPLICIT_NO_SD: {snssai_data_explicit_no_sd}")
+        print(f"Encoded EXPLICIT_NO_SD: {list(encoded_explicit)} -> {encoded_explicit}")
+        try:
+            decoded_explicit = self.asn1_compiler.decode('S-NSSAI', encoded_explicit)
+            print(f"Decoded EXPLICIT_NO_SD: {decoded_explicit}")
+        except Exception as e:
+            print(f"Error decoding EXPLICIT_NO_SD: {e}")
+        print("-" * 20)
         
-        print("\n--- Encoding with sST only (should omit sD) ---")
-        dump_encoded_bytes("SST only", {'sST': b'\x01'})
-        
-        print("\n--- Encoding with sST + sD (explicit 0xffs) ---")
-        dump_encoded_bytes("SST + SD", {'sST': b'\x01', 'sD': b'\xff\xff\xff'})
-        
-        print("\n--- Encoding with sST as char 'A' ---")
-        dump_encoded_bytes("SST = 'A'", {'sST': b'A'})
-        
-        print("\n--- Encoding with sST as int 65 ---")
-        dump_encoded_bytes("SST = 65", {'sST': bytes([65])})        
+        # Test 3: SST=b'A', sD omitted
+        snssai_data_sst_A = {'sST': b'A'} # b'A' is b'\x41'
+        encoded_sst_A = self.asn1_compiler.encode('S-NSSAI', snssai_data_sst_A)
+        print(f"Input SST_A: {snssai_data_sst_A}")
+        print(f"Encoded SST_A: {list(encoded_sst_A)} -> {encoded_sst_A}")
+        try:
+            decoded_sst_A = self.asn1_compiler.decode('S-NSSAI', encoded_sst_A)
+            print(f"Decoded SST_A: {decoded_sst_A}")
+        except Exception as e:
+            print(f"Error decoding SST_A: {e}")
+        print("-" * 20)
         
         for metric_name_str in metric_names:
             label_info_list_for_this_metric = [] # This will be the value for 'labelInfoList' key
