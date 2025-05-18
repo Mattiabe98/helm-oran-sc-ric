@@ -43,11 +43,11 @@ class e2sm_kpm_packer(object):
         metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
         
         snssai_data_explicit_no_sd = {
-            'sST': b'\x01',
+            'sST': 1',
             'sD': b'\xff\xff\xff'
         }
         snssai_data_sst_only = {
-            'sST': b'\x01'
+            'sST': 1'
             # sD is omitted
         }
         
