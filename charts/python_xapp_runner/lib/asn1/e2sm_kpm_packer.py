@@ -49,8 +49,7 @@ class e2sm_kpm_packer(object):
                 # Construct LabelInfoList for DRB.AirIfDelayDist with SliceID
                 # 1. Create the S-NSSAI structure
                 # In _pack_meas_info_list, for DRB.AirIfDelayDist:
-                s_nssai_struct = {'sST': b'\x01'}
-                measurement_label_struct = {'sliceID': s_nssai_struct}
+                measurement_label_struct = {'fiveQI': 5} # Example 5QI value
                 label_info_item_struct = {'measLabel': measurement_label_struct}
                 label_info_list_for_this_metric.append(label_info_item_struct)
                 
