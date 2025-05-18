@@ -42,15 +42,15 @@ class e2sm_kpm_packer(object):
 
         metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
         
-        snssai_data_explicit_no_sd = {
-            'sST': '1',
-            'sD': b'\xff\xff\xff'
-        }
+        snssai_data_explicit_no_sd = {'sST': b'\x01', 'sD': b'\xff\xff\xff'}
         snssai_data_sst_only = {
-            'sST': '1'
+            'sST': b'\x01'
             # sD is omitted
         }
-        
+        test_sst_A = {'sST': b'A'}
+        test_sst_A_int = {'sST': bytes([65])}
+        print(self.asn1_compiler.encode('S-NSSAI', test_sst_A))
+        print(self.asn1_compiler.encode('S-NSSAI', test_sst_A_int))
         try:
             encoded_bytes1 = self.asn1_compiler.encode('S-NSSAI', snssai_data_explicit_no_sd)
             print(f"Encoded S-NSSAI (explicit no SD): {list(encoded_bytes1)}") # Print as list of ints
