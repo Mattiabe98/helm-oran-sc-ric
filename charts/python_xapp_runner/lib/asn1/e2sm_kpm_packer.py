@@ -42,24 +42,24 @@ class e2sm_kpm_packer(object):
 
         metrics_requiring_slice_id_label = {"DRB.AirIfDelayDist"}
         
-        snssai_data_explicit_no_sd = {'sST': b'\x01', 'sD': b'\xff\xff\xff'}
-        snssai_data_sst_only = {
-            'sST': b'\x01'
-            # sD is omitted
-        }
-        test_sst_A = {'sST': b'A'}
-        test_sst_A_int = {'sST': bytes([65])}
-        print(self.asn1_compiler.encode('S-NSSAI', test_sst_A))
-        print(self.asn1_compiler.encode('S-NSSAI', test_sst_A_int))
-        try:
-            encoded_bytes1 = self.asn1_compiler.encode('S-NSSAI', snssai_data_explicit_no_sd)
-            print(f"Encoded S-NSSAI (explicit no SD): {list(encoded_bytes1)}") # Print as list of ints
+        import pprint
         
-            encoded_bytes2 = self.asn1_compiler.encode('S-NSSAI', snssai_data_sst_only)
-            print(f"Encoded S-NSSAI (SST only): {list(encoded_bytes2)}")
+        def dump_encoded_bytes(label, data):
+            encoded = self.asn1_compiler.encode('S-NSSAI', data)
+            print(f"{label}: {list(encoded)}")
+            return encoded
         
-        except Exception as e:
-            print(f"Error encoding S-NSSAI directly: {e}")
+        print("\n--- Encoding with sST only (should omit sD) ---")
+        dump_encoded_bytes("SST only", {'sST': b'\x01'})
+        
+        print("\n--- Encoding with sST + sD (explicit 0xffs) ---")
+        dump_encoded_bytes("SST + SD", {'sST': b'\x01', 'sD': b'\xff\xff\xff'})
+        
+        print("\n--- Encoding with sST as char 'A' ---")
+        dump_encoded_bytes("SST = 'A'", {'sST': b'A'})
+        
+        print("\n--- Encoding with sST as int 65 ---")
+        dump_encoded_bytes("SST = 65", {'sST': bytes([65])})        
         
         for metric_name_str in metric_names:
             label_info_list_for_this_metric = [] # This will be the value for 'labelInfoList' key
