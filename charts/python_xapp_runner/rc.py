@@ -16,7 +16,7 @@ class MyXapp(xAppBase):
     @xAppBase.start_function
     def start(self, e2_node_id, ue_id):
       current_time = datetime.datetime.now()
-      print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb_ratio, max_prb_ratio))
+      print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb, max_prb))
       self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb, max_prb, dedicated_prb_ratio=100, ack_request=1)
 
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     parser.add_argument("--config", type=str, default='', help="xApp config file path")
     parser.add_argument("--http_server_port", type=int, default=8090, help="HTTP server listen port")
     parser.add_argument("--rmr_port", type=int, default=4560, help="RMR port")
-    parser.add_argument("--e2_node_id", type=str, default='gnbd_001_001_00019b_0', help="E2 Node ID")
+    parser.add_argument("--e2_node_id", type=str, default='gnbd_999_092_00019b_1', help="E2 Node ID")
     parser.add_argument("--ran_func_id", type=int, default=3, help="E2SM RC RAN function ID")
     parser.add_argument("--ue_id", type=int, default=0, help="UE ID")
     parser.add_argument("--min_prb", type=int, help="Minimum PRB")
