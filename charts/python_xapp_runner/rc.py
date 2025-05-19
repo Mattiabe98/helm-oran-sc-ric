@@ -14,7 +14,7 @@ class MyXapp(xAppBase):
     # Mark the function as xApp start function using xAppBase.start_function decorator.
     # It is required to start the internal msg receive loop.
     @xAppBase.start_function
-    def start(self, e2_node_id, ue_id):
+    def start(self, e2_node_id, ue_id, min_prb, max_prb):
       current_time = datetime.datetime.now()
       print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb, max_prb))
       self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb, max_prb, dedicated_prb_ratio=100, ack_request=1)
@@ -37,6 +37,8 @@ if __name__ == '__main__':
     e2_node_id = args.e2_node_id # TODO: get available E2 nodes from SubMgr, now the id has to be given.
     ran_func_id = args.ran_func_id # TODO: get available E2 nodes from SubMgr, now the id has to be given.
     ue_id = args.ue_id
+    min_prb = args.min_prb
+    max_prb = args.max_prb
 
     # Create MyXapp.
     myXapp = MyXapp(config, args.http_server_port, args.rmr_port)
@@ -48,4 +50,4 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, myXapp.signal_handler)
 
     # Start xApp.
-    myXapp.start(e2_node_id, ue_id)
+    myXapp.start(e2_node_id, ue_id, min_prb, max_prb)
