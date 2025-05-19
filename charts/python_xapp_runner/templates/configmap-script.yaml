@@ -4,7 +4,7 @@ metadata:
   name: xapp-script
 data:
   {{- $files := .Files }}
-  {{- range tuple "xapp.py" "start-metrics.sh" }}
+  {{- range tuple "kpm.py" "rc.py" }}
   {{ . }}: |-
 {{ $files.Get . | trim | indent 4 }}
   {{- end }}
