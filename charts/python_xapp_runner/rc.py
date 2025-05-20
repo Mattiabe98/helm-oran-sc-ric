@@ -109,5 +109,5 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, myXapp.signal_handler)
 
     # Start xApp.
-    myXapp.start(e2_node_id, kpm_report_style, ue_ids, metrics)
+    myXapp.start(e2_node_id, kpm_report_style, ue_ids, metrics, plmn_string)
     # Note: xApp will unsubscribe all active subscriptions at exit.
