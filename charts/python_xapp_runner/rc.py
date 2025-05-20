@@ -17,7 +17,7 @@ class MyXapp(xAppBase):
     def start(self, e2_node_id, ue_id, min_prb, max_prb, plmn_string):
       current_time = datetime.datetime.now()
       print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb, max_prb))
-      self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb, max_prb, dedicated_prb_ratio=100, ack_request=1, plmn_string)
+      self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb, max_prb, plmn_string, dedicated_prb_ratio=100, ack_request=1)
 
 
 if __name__ == '__main__':
