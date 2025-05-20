@@ -40,12 +40,15 @@ class e2sm_rc_module(object):
 
     def send_control_request_style_2_action_6(self, e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, dedicated_prb_ratio, ack_request=1):
         plmn_string = "00101"
+        print(plmn_string)
         sst = 1
         sd = 1
 
         # PLMN encoding
         PLMN = plmn_string_to_bcd(plmn_string)
+        print(PLMN)
         PLMN = plmn_to_bytes(PLMN)
+        print(PLMN)
         # S-NSSAI encoding
         sst = sst.to_bytes(1, byteorder='big')
         sd = sd.to_bytes(3, byteorder='big')
