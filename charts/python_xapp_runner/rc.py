@@ -17,7 +17,7 @@ class MyXapp(xAppBase):
         self.cur_ue_max_prb_ratio = {}
         self.dl_tx_data_threshold_mb = 20
 
-    def my_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id, plmn_string):
+    def my_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id):
         indication_hdr = self.e2sm_kpm.extract_hdr_info(indication_hdr)
         meas_data = self.e2sm_kpm.extract_meas_data(indication_msg)
 
@@ -60,7 +60,7 @@ class MyXapp(xAppBase):
                 self.ue_dl_tx_data[ue_id] = 0
                 self.cur_ue_max_prb_ratio[ue_id] = new_ue_max_prb_ratio
                 print("    --->Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min: {}, PRB_max: {}".format(e2_agent_id, ue_id, self.min_prb_ratio, new_ue_max_prb_ratio))
-                self.e2sm_rc.control_slice_level_prb_quota(e2_agent_id, ue_id, plmn_string, min_prb_ratio=self.min_prb_ratio, max_prb_ratio=new_ue_max_prb_ratio, dedicated_prb_ratio=100, ack_request=1)
+                self.e2sm_rc.control_slice_level_prb_quota(e2_agent_id, ue_id, min_prb_ratio=self.min_prb_ratio, max_prb_ratio=new_ue_max_prb_ratio, dedicated_prb_ratio=100, ack_request=1)
         print("------------------------------------------------------------------")
         print("")
 
@@ -68,11 +68,11 @@ class MyXapp(xAppBase):
     # Mark the function as xApp start function using xAppBase.start_function decorator.
     # It is required to start the internal msg receive loop.
     @xAppBase.start_function
-    def start(self, e2_node_id, kpm_report_style, ue_ids, metric_names, plmn_string):
+    def start(self, e2_node_id, kpm_report_style, ue_ids, metric_names):
         report_period = 1000
         granul_period = 1000
 
-        subscription_callback = lambda agent, sub, hdr, msg: self.my_subscription_callback(agent, sub, hdr, msg, kpm_report_style, None, plmn_string)
+        subscription_callback = lambda agent, sub, hdr, msg: self.my_subscription_callback(agent, sub, hdr, msg, kpm_report_style, None)
 
         # Dummy condition that is always satisfied
         matchingUeConds = [{'testCondInfo': {'testType': ('ul-rSRP', 'true'), 'testExpr': 'lessthan', 'testValue': ('valueInt', 1000)}}]
@@ -89,15 +89,13 @@ if __name__ == '__main__':
     parser.add_argument("--kpm_report_style", type=int, default=4, help="KPM Report Style ID")
     parser.add_argument("--ue_ids", type=str, default='0', help="UE ID")
     parser.add_argument("--metrics", type=str, default='DRB.RlcSduTransmittedVolumeDL', help="Metrics name as comma-separated string")
-    parser.add_argument("--plmn_string", type=str, help="PLMN string")
-    
+
     args = parser.parse_args()
     e2_node_id = args.e2_node_id # TODO: get available E2 nodes from SubMgr, now the id has to be given.
     ran_func_id = args.ran_func_id # TODO: get available E2 nodes from SubMgr, now the id has to be given.
     ue_ids = list(map(int, args.ue_ids.split(","))) # Note: the UE id has to exist at E2 node!
     kpm_report_style = args.kpm_report_style
     metrics = args.metrics.split(",")
-    plmn_string = args.plmn_string
 
     # Create MyXapp.
     myXapp = MyXapp(args.http_server_port, args.rmr_port)
@@ -109,5 +107,5 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, myXapp.signal_handler)
 
     # Start xApp.
-    myXapp.start(e2_node_id, kpm_report_style, ue_ids, metrics, plmn_string)
+    myXapp.start(e2_node_id, kpm_report_style, ue_ids, metrics)
     # Note: xApp will unsubscribe all active subscriptions at exit.
