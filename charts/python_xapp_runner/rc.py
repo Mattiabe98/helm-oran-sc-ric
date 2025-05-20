@@ -14,10 +14,10 @@ class MyXapp(xAppBase):
     # Mark the function as xApp start function using xAppBase.start_function decorator.
     # It is required to start the internal msg receive loop.
     @xAppBase.start_function
-    def start(self, e2_node_id, ue_id, min_prb, max_prb):
+    def start(self, e2_node_id, ue_id, min_prb, max_prb, plmn_string):
       current_time = datetime.datetime.now()
       print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb, max_prb))
-      self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb, max_prb, dedicated_prb_ratio=100, ack_request=1)
+      self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb, max_prb, dedicated_prb_ratio=100, ack_request=1, plmn_string)
 
 
 if __name__ == '__main__':
@@ -30,6 +30,7 @@ if __name__ == '__main__':
     parser.add_argument("--ue_id", type=int, default=0, help="UE ID")
     parser.add_argument("--min_prb", type=int, help="Minimum PRB")
     parser.add_argument("--max_prb", type=int, help="Maximum PRB")
+    parser.add_argument("--plmn_string", type=int, help="PLMN string")
 
 
     args = parser.parse_args()
@@ -39,7 +40,8 @@ if __name__ == '__main__':
     ue_id = args.ue_id
     min_prb = args.min_prb
     max_prb = args.max_prb
-
+    plmn_string = args.plmn_string
+    
     # Create MyXapp.
     myXapp = MyXapp(config, args.http_server_port, args.rmr_port)
     myXapp.e2sm_rc.set_ran_func_id(ran_func_id)
@@ -50,4 +52,4 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, myXapp.signal_handler)
 
     # Start xApp.
-    myXapp.start(e2_node_id, ue_id, min_prb, max_prb)
+    myXapp.start(e2_node_id, ue_id, min_prb, max_prb, plmn_string)
