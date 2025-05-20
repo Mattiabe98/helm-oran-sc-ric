@@ -60,7 +60,7 @@ class MyXapp(xAppBase):
                 self.ue_dl_tx_data[ue_id] = 0
                 self.cur_ue_max_prb_ratio[ue_id] = new_ue_max_prb_ratio
                 print("    --->Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min: {}, PRB_max: {}".format(e2_agent_id, ue_id, self.min_prb_ratio, new_ue_max_prb_ratio))
-                self.e2sm_rc.control_slice_level_prb_quota(e2_agent_id, ue_id, min_prb_ratio=self.min_prb_ratio, max_prb_ratio=new_ue_max_prb_ratio, plmn_string, dedicated_prb_ratio=100, ack_request=1)
+                self.e2sm_rc.control_slice_level_prb_quota(e2_agent_id, ue_id, plmn_string, min_prb_ratio=self.min_prb_ratio, max_prb_ratio=new_ue_max_prb_ratio, dedicated_prb_ratio=100, ack_request=1)
         print("------------------------------------------------------------------")
         print("")
 
