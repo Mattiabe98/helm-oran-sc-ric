@@ -153,7 +153,20 @@ class xAppBase(object):
                 summary = rmr.message_summary(sbuf)
             except Exception as e:
                 continue
-
+            if (summary['message type'] == 12042): # RIC_CONTROL_FAILURE
+                print("Received RIC_CONTROL_FAILURE")
+                try:
+                    # You'll need an ASN.1 definition for RICcontrolFailure PDU
+                    # For now, just print the raw payload as hex to inspect
+                    failure_payload = rmr.get_payload(sbuf)
+                    print(f"  Raw RIC_CONTROL_FAILURE payload: {failure_payload.hex()}")
+                    # TODO: Add proper ASN.1 decoding here for E2AP.RICcontrolFailure
+                    # from .e2ap.asn1 import RICcontrolFailure # (you'd need to define/get this)
+                    # ric_failure_pdu = RICcontrolFailure()
+                    # ric_failure_pdu.decode(failure_payload) # or .from_aper(failure_payload)
+                    # print(f"  Decoded Failure Cause: {ric_failure_pdu.get_cause_details()}") # Fictional getter
+                except Exception as e_decode:
+                    print(f"  Error decoding RIC_CONTROL_FAILURE: {e_decode}")
             if summary[rmr.RMR_MS_MSG_STATE] == 0: # RMR_OK
                 # Check if RIC INDICATION message
                 if (summary['message type'] == 12050):
