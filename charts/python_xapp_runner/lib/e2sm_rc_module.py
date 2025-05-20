@@ -41,7 +41,7 @@ class e2sm_rc_module(object):
     def send_control_request_style_2_action_6(self, e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio, ack_request=1):
         plmn_string = str(plmn_string)
         sst = 1
-        sd = 1
+        sd = 0
 
         # PLMN encoding
         PLMN = plmn_string_to_bcd(plmn_string)
