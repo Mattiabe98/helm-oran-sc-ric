@@ -16,26 +16,41 @@ class MyXapp(xAppBase):
     @xAppBase.start_function
     def start(self, e2_node_id, ue_id, min_prb, max_prb, plmn_string):
         while self.running:
-            min_prb_ratio = 1
-            max_prb_ratio = 5
-            current_time = datetime.datetime.now()
-            print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb_ratio, max_prb_ratio))
-            self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio=100, ack_request=1)
-            time.sleep(5)
-
-            min_prb_ratio = 1
-            max_prb_ratio = 40
-            current_time = datetime.datetime.now()
-            print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb_ratio, max_prb_ratio))
-            self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio=100, ack_request=1)
-            time.sleep(5)
-
-            min_prb_ratio = 1
-            max_prb_ratio = 100
-            current_time = datetime.datetime.now()
-            print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb_ratio, max_prb_ratio))
-            self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio=100, ack_request=1)
-            time.sleep(5)
+            try:
+                user_input = input("\nEnter PRB_min_ratio and PRB_max_ratio: ").strip()
+                if not user_input:
+                    continue
+    
+                try:
+                    min_prb_ratio_str, max_prb_ratio_str = user_input.split()
+                    min_prb_ratio = int(min_prb_ratio_str)
+                    max_prb_ratio = int(max_prb_ratio_str)
+                except ValueError:
+                    print("❌ Invalid input. Please enter two integers separated by a space.")
+                    continue
+    
+                if (min_prb_ratio, max_prb_ratio) == (last_min_prb, last_max_prb):
+                    print("⚠️  Same PRB values as last time. No control message sent.")
+                    continue
+    
+                last_min_prb = min_prb_ratio
+                last_max_prb = max_prb_ratio
+    
+                current_time = datetime.datetime.now()
+                print("{} ✅ Sending RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(
+                    current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb_ratio, max_prb_ratio))
+    
+                self.e2sm_rc.control_slice_level_prb_quota(
+                    e2_node_id, ue_id,
+                    min_prb_ratio, max_prb_ratio,
+                    plmn_string,
+                    dedicated_prb_ratio=100,
+                    ack_request=1
+                )
+    
+            except KeyboardInterrupt:
+                print("\n🛑 PRB control loop stopped.")
+                self.running = False
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='My example xApp')
