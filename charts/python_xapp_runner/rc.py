@@ -17,7 +17,7 @@ class MyXapp(xAppBase):
         self.cur_ue_max_prb_ratio = {}
         self.dl_tx_data_threshold_mb = 20
 
-    def my_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id):
+    def my_subscription_callback(self, e2_agent_id, subscription_id, indication_hdr, indication_msg, kpm_report_style, ue_id, plmn_string):
         indication_hdr = self.e2sm_kpm.extract_hdr_info(indication_hdr)
         meas_data = self.e2sm_kpm.extract_meas_data(indication_msg)
 
@@ -60,7 +60,7 @@ class MyXapp(xAppBase):
                 self.ue_dl_tx_data[ue_id] = 0
                 self.cur_ue_max_prb_ratio[ue_id] = new_ue_max_prb_ratio
                 print("    --->Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min: {}, PRB_max: {}".format(e2_agent_id, ue_id, self.min_prb_ratio, new_ue_max_prb_ratio))
-                self.e2sm_rc.control_slice_level_prb_quota(e2_agent_id, ue_id, min_prb_ratio=self.min_prb_ratio, max_prb_ratio=new_ue_max_prb_ratio, dedicated_prb_ratio=100, ack_request=1)
+                self.e2sm_rc.control_slice_level_prb_quota(e2_agent_id, ue_id, min_prb_ratio=self.min_prb_ratio, max_prb_ratio=new_ue_max_prb_ratio, plmn_string, dedicated_prb_ratio=100, ack_request=1)
         print("------------------------------------------------------------------")
         print("")
 
@@ -68,11 +68,11 @@ class MyXapp(xAppBase):
     # Mark the function as xApp start function using xAppBase.start_function decorator.
     # It is required to start the internal msg receive loop.
     @xAppBase.start_function
-    def start(self, e2_node_id, kpm_report_style, ue_ids, metric_names):
+    def start(self, e2_node_id, kpm_report_style, ue_ids, metric_names, plmn_string):
         report_period = 1000
         granul_period = 1000
 
-        subscription_callback = lambda agent, sub, hdr, msg: self.my_subscription_callback(agent, sub, hdr, msg, kpm_report_style, None)
+        subscription_callback = lambda agent, sub, hdr, msg: self.my_subscription_callback(agent, sub, hdr, msg, kpm_report_style, None, plmn_string)
 
         # Dummy condition that is always satisfied
         matchingUeConds = [{'testCondInfo': {'testType': ('ul-rSRP', 'true'), 'testExpr': 'lessthan', 'testValue': ('valueInt', 1000)}}]
