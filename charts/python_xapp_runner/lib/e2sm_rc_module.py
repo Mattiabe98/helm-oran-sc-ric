@@ -97,7 +97,7 @@ class e2sm_rc_module(object):
                                     ]}]}})}
                                 ]}
                             )}
-        print(control_msg)
+        print(control_msg_dict)
         control_msg = self.e2sm_rc_compiler.pack_ric_control_msg(control_msg_dict)
         payload = self._build_ric_control_request(control_header, control_msg, ack_request)
         self.parent.rmr_send(e2_node_id, payload, 12040, retries=1)
