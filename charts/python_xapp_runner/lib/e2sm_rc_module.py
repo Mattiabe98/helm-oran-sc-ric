@@ -40,6 +40,7 @@ class e2sm_rc_module(object):
 
     def send_control_request_style_2_action_6(self, e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio, ack_request=1):
         plmn_string = "00101"
+        print(plmn_string)
         # plmn_string = str(plmn_string)
         sst = 1
         sd = 1
@@ -47,6 +48,7 @@ class e2sm_rc_module(object):
         # PLMN encoding
         PLMN = plmn_string_to_bcd(plmn_string)
         PLMN = plmn_to_bytes(PLMN)
+        print(PLMN)
         # S-NSSAI encoding
         sst = sst.to_bytes(1, byteorder='big')
         sd = sd.to_bytes(3, byteorder='big')
@@ -95,7 +97,7 @@ class e2sm_rc_module(object):
                                     ]}]}})}
                                 ]}
                             )}
-
+        print(control_msg)
         control_msg = self.e2sm_rc_compiler.pack_ric_control_msg(control_msg_dict)
         payload = self._build_ric_control_request(control_header, control_msg, ack_request)
         self.parent.rmr_send(e2_node_id, payload, 12040, retries=1)
