@@ -198,4 +198,5 @@ class xAppBase(object):
         sys.exit(0)
 
     def signal_handler(self, sig, frame):
+        print("Got signal to stop..")
         self.stop()
