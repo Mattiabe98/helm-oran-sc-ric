@@ -71,7 +71,7 @@ if __name__ == '__main__':
     parser.add_argument("--ue_id", type=int, default=0, help="UE ID")
     parser.add_argument("--min_prb", type=int, help="Minimum PRB")
     parser.add_argument("--max_prb", type=int, help="Maximum PRB")
-    parser.add_argument("--plmn_string", type=string, help="PLMN string")
+    parser.add_argument("--plmn_string", type=str, help="PLMN string")
 
 
     args = parser.parse_args()
