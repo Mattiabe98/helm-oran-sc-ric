@@ -89,13 +89,15 @@ if __name__ == '__main__':
     parser.add_argument("--kpm_report_style", type=int, default=4, help="KPM Report Style ID")
     parser.add_argument("--ue_ids", type=str, default='0', help="UE ID")
     parser.add_argument("--metrics", type=str, default='DRB.RlcSduTransmittedVolumeDL', help="Metrics name as comma-separated string")
-
+    parser.add_argument("--plmn_string", type=str, help="PLMN string")
+    
     args = parser.parse_args()
     e2_node_id = args.e2_node_id # TODO: get available E2 nodes from SubMgr, now the id has to be given.
     ran_func_id = args.ran_func_id # TODO: get available E2 nodes from SubMgr, now the id has to be given.
     ue_ids = list(map(int, args.ue_ids.split(","))) # Note: the UE id has to exist at E2 node!
     kpm_report_style = args.kpm_report_style
     metrics = args.metrics.split(",")
+    plmn_string = args.plmn_string
 
     # Create MyXapp.
     myXapp = MyXapp(args.http_server_port, args.rmr_port)
