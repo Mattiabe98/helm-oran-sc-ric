@@ -15,10 +15,27 @@ class MyXapp(xAppBase):
     # It is required to start the internal msg receive loop.
     @xAppBase.start_function
     def start(self, e2_node_id, ue_id, min_prb, max_prb, plmn_string):
-      current_time = datetime.datetime.now()
-      print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb, max_prb))
-      self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb, max_prb, plmn_string, dedicated_prb_ratio=100, ack_request=1)
+        while self.running:
+            min_prb_ratio = 1
+            max_prb_ratio = 5
+            current_time = datetime.datetime.now()
+            print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb_ratio, max_prb_ratio))
+            self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio=100, ack_request=1)
+            time.sleep(5)
 
+            min_prb_ratio = 1
+            max_prb_ratio = 40
+            current_time = datetime.datetime.now()
+            print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb_ratio, max_prb_ratio))
+            self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio=100, ack_request=1)
+            time.sleep(5)
+
+            min_prb_ratio = 1
+            max_prb_ratio = 100
+            current_time = datetime.datetime.now()
+            print("{} Send RIC Control Request to E2 node ID: {} for UE ID: {}, PRB_min_ratio: {}, PRB_max_ratio: {}".format(current_time.strftime("%H:%M:%S"), e2_node_id, ue_id, min_prb_ratio, max_prb_ratio))
+            self.e2sm_rc.control_slice_level_prb_quota(e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio=100, ack_request=1)
+            time.sleep(5)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='My example xApp')
