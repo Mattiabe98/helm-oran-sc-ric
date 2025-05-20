@@ -83,9 +83,9 @@ class e2sm_rc_module(object):
                                                         #>>>>>S-NSSAI, STRUCTURE
                                                         {'ranParameter-ID': 8, 'ranParameter-valueType': ('ranP-Choice-Structure', {'ranParameter-Structure': {'sequence-of-ranParameters': [
                                                                 #>>>>>>SST, ELEMENT
-                                                                {'ranParameter-ID': 9, 'ranParameter-valueType': ('ranP-Choice-ElementFalse', {'ranParameter-value': ('valueOctS', sst)})}]
+                                                                {'ranParameter-ID': 9, 'ranParameter-valueType': ('ranP-Choice-ElementFalse', {'ranParameter-value': ('valueOctS', sst)})},
                                                                 #>>>>>>SD, ELEMENT
-                                                                # {'ranParameter-ID': 10, 'ranParameter-valueType': ('ranP-Choice-ElementFalse', {'ranParameter-value': ('valueOctS', sd)})}]
+                                                                {'ranParameter-ID': 10, 'ranParameter-valueType': ('ranP-Choice-ElementFalse', {'ranParameter-value': ('valueOctS', sd)})}]
                                                             }})}]}})}]}]}})}]}})},
                                             #>>Min PRB Policy Ratio, ELEMENT
                                             {'ranParameter-ID': 11, 'ranParameter-valueType': ('ranP-Choice-ElementFalse', {'ranParameter-value': ('valueInt', min_prb_ratio)})},
