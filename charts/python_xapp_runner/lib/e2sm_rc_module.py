@@ -38,7 +38,7 @@ class e2sm_rc_module(object):
         payload = bytes(hex_num for hex_num in msg)
         return payload
 
-    def send_control_request_style_2_action_6(self, e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, dedicated_prb_ratio, ack_request=1, plmn_string):
+    def send_control_request_style_2_action_6(self, e2_node_id, ue_id, min_prb_ratio, max_prb_ratio, plmn_string, dedicated_prb_ratio, ack_request=1):
         # plmn_string = "00101"
         sst = 1
         sd = 1
